@@ -76,7 +76,7 @@
       <div class="contact-form-panel">
         <h2 class="contact-form-title">Send Us a Message</h2>
 
-        <form class="contact-form" id="contactForm" method="POST" action="assets/contact-send.php" novalidate>
+        <form class="contact-form" id="contactForm" method="POST" action="/api/contact" novalidate>
   <div class="contact-grid">
     <div class="field">
       <label for="name">Full Name</label>
@@ -134,6 +134,32 @@
 </div>
 <button class="contact-submit" type="submit">Send Message</button>
 </form>
+<script>
+  document.getElementById("contactForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    // add honeypot field name "hp" (optional)
+    data.hp = data.hp || "";
+
+    const r = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const out = await r.json().catch(() => ({}));
+    if (r.ok && out.ok) {
+      window.location.href = "contact-us.html?sent=1";
+    } else {
+      window.location.href = "contact-us.html?error=1";
+    }
+  });
+</script>
+
+
 
 <script>
   // Copy visible companyName into hidden field so PHP can include it (optional)

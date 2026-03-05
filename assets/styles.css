@@ -1377,7 +1377,7 @@ p{ line-height: 1.75; }
 }
 
 .logo{
-  height:40px;      /* adjust 32–45px as needed */
+  height:45px;      /* adjust 32–45px as needed */
   width:auto;
   display:block;
   object-fit:contain;

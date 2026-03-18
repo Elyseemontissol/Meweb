@@ -138,15 +138,21 @@
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
 
-            const r = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-            const out = await r.json().catch(() => ({}));
-            if (r.ok && out.ok) {
-              document.getElementById('formContainer').style.display = 'none';
-              document.getElementById('formSuccess').style.display = 'block';
-            } else {
+            try {
+              const r = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+              const out = await r.json().catch(() => ({}));
+              if (r.ok && out.ok) {
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('formSuccess').style.display = 'block';
+              } else {
+                submitBtn.textContent = 'Send Message';
+                submitBtn.disabled = false;
+                alert('Error: ' + (out.error || 'Status ' + r.status) + '. Please try again or email us directly.');
+              }
+            } catch (err) {
               submitBtn.textContent = 'Send Message';
               submitBtn.disabled = false;
-              alert('Something went wrong. Please try again or email us directly.');
+              alert('Network error: ' + err.message + '. Is the API deployed?');
             }
           });
         </script>

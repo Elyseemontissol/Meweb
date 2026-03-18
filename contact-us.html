@@ -48,6 +48,15 @@
   <div class="container">
     <div class="contact-layout">
       <div class="contact-form-panel">
+        <div id="formSuccess" style="display:none; text-align:center; padding:60px 20px;">
+          <div style="width:64px; height:64px; border-radius:50%; background:rgba(34,197,94,.15); display:grid; place-items:center; margin:0 auto 20px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <h2 style="font-size:1.6rem; margin-bottom:12px; color:#000;">Message Sent!</h2>
+          <p style="color:#555; font-size:1rem; line-height:1.7; max-width:400px; margin:0 auto;">Thank you for reaching out. We've received your message and will be in contact with you shortly.</p>
+        </div>
+
+        <div id="formContainer">
         <h2 class="contact-form-title">Send Us a Message</h2>
         <form class="contact-form" id="contactForm" method="POST" action="/api/contact" novalidate>
           <div class="contact-grid">
@@ -125,10 +134,20 @@
             delete data.captchaAnswer;
             delete data.captchaExpected;
 
+            const submitBtn = form.querySelector('.contact-submit');
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
             const r = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
             const out = await r.json().catch(() => ({}));
-            if (r.ok && out.ok) { window.location.href = "contact-us.html?sent=1"; }
-            else { window.location.href = "contact-us.html?error=1"; }
+            if (r.ok && out.ok) {
+              document.getElementById('formContainer').style.display = 'none';
+              document.getElementById('formSuccess').style.display = 'block';
+            } else {
+              submitBtn.textContent = 'Send Message';
+              submitBtn.disabled = false;
+              alert('Something went wrong. Please try again or email us directly.');
+            }
           });
         </script>
         <script>
@@ -138,6 +157,7 @@
             if(company && meta){ company.addEventListener('input', () => meta.value = company.value); meta.value = company.value || ""; }
           })();
         </script>
+        </div>
       </div>
 
       <div class="contact-info-panel">

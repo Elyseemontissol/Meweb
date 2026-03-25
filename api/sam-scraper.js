@@ -176,16 +176,19 @@ export default async function handler(req, res) {
 
     // Send email
     const html = buildEmailHtml(allOpportunities);
-    await resend.emails.send({
+    console.log('Sending email via Resend...', { hasApiKey: !!process.env.RESEND_API_KEY });
+    const emailResult = await resend.emails.send({
       from: 'Montissol SAM Scanner <noreply@montissolessentials.com>',
       to: RECIPIENT_EMAIL,
       subject: `[SAM.gov] ${allOpportunities.length} Opportunities Found — ${postedTo}`,
       html,
     });
+    console.log('Resend response:', JSON.stringify(emailResult));
 
     return res.status(200).json({
       ok: true,
       count: allOpportunities.length,
+      emailResult,
       message: `Email sent to ${RECIPIENT_EMAIL} with ${allOpportunities.length} opportunities`,
     });
   } catch (error) {

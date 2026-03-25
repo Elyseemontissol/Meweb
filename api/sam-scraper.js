@@ -177,7 +177,7 @@ export default async function handler(req, res) {
     // Send email
     const html = buildEmailHtml(allOpportunities);
     await resend.emails.send({
-      from: 'Montissol SAM Scanner <onboarding@resend.dev>',
+      from: 'Montissol SAM Scanner <noreply@montissolessentials.com>',
       to: RECIPIENT_EMAIL,
       subject: `[SAM.gov] ${allOpportunities.length} Opportunities Found — ${postedTo}`,
       html,

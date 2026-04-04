@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   try {
     await resend.emails.send({
       from: 'Montissol Website <noreply@montissolessentials.com>',
-      to: 'ElyseeM@MontissolEssentials.com',
+      to: ['info@montissolessentials.com', 'ElyseeM@MontissolEssentials.com'],
       replyTo: email,
       subject: `[Website] ${subject} - ${name}`,
       html: `

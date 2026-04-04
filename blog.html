@@ -36,11 +36,6 @@
 
 <section class="blog-wrap">
   <div class="container">
-    <div class="blog-tools">
-      <div class="blog-search">
-        <input id="blogSearch" type="search" placeholder="Search within this topic..." aria-label="Search blog posts">
-      </div>
-    </div>
 
     <div class="no-results" id="noResults">No posts match your search in this category.</div>
 
@@ -119,26 +114,18 @@
     document.title = category + " Posts - Montissol Essentials";
   }
 
-  const searchInput = document.getElementById('blogSearch');
   const cards = Array.from(document.querySelectorAll('.post-card'));
   const noResults = document.getElementById('noResults');
 
   function normalize(s) { return (s || '').toString().toLowerCase().trim(); }
 
   function applyFilters() {
-    const q = normalize(searchInput.value);
     const cat = normalize(category);
     let shown = 0;
 
     cards.forEach(card => {
       const cardCat = normalize(card.getAttribute('data-category'));
-      const t = normalize(card.querySelector('.post-title')?.textContent);
-      const ex = normalize(card.querySelector('.post-excerpt')?.textContent);
-      const hay = t + ' ' + ex + ' ' + cardCat;
-
-      const matchCategory = !cat || cardCat === cat;
-      const matchSearch = !q || hay.includes(q);
-      const show = matchCategory && matchSearch;
+      const show = !cat || cardCat === cat;
       card.style.display = show ? '' : 'none';
       if (show) shown++;
     });
@@ -146,7 +133,6 @@
     noResults.style.display = (shown === 0) ? 'block' : 'none';
   }
 
-  searchInput.addEventListener('input', applyFilters);
   applyFilters();
 </script>
 <script src="assets/shared.js"></script>

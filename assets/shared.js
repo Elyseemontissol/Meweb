@@ -17,6 +17,35 @@
     const yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
   }
+
+  // Header scroll-aware shrink
+  var header = document.querySelector('.site-header');
+  if (header) {
+    var lastScroll = 0;
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY;
+      if (y > 60) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+      lastScroll = y;
+    }, { passive: true });
+  }
+})();
+
+// Scroll reveal via Intersection Observer
+(function () {
+  var reveals = document.querySelectorAll('.reveal');
+  if (!reveals.length) return;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(function (el) { observer.observe(el); });
 })();
 
 // Lightning effect for cloud banner
@@ -48,4 +77,65 @@
   window._lightningEl = el;
 
   schedule();
+})();
+
+// Particle canvas for hero sections
+(function () {
+  var canvas = document.getElementById('particleCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var count = 60;
+
+  function resize() {
+    var hero = canvas.parentElement;
+    canvas.width = hero.offsetWidth;
+    canvas.height = hero.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (var i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + .5,
+      dx: (Math.random() - .5) * .4,
+      dy: (Math.random() - .5) * .3,
+      o: Math.random() * .4 + .1
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(231, 77, 16, ' + p.o + ')';
+      ctx.fill();
+
+      // Draw connections
+      for (var j = i + 1; j < particles.length; j++) {
+        var p2 = particles[j];
+        var dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = 'rgba(231, 77, 16, ' + (.08 * (1 - dist / 120)) + ')';
+          ctx.lineWidth = .5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
 })();

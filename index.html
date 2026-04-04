@@ -30,6 +30,7 @@
   <div class="hero-split__bg" id="heroBg"
     style="background-image:url('assets/images/cement-plant-with-high-factory-structure-and-tower-N7J96QC.jpg'); transition: opacity 1.5s ease;">
   </div>
+  <canvas id="particleCanvas"></canvas>
   <div class="hero-lightning" id="heroLightning"></div>
   <div class="hero-split__overlay"></div>
 
@@ -56,17 +57,19 @@
 
 <!-- CAPABILITIES -->
 <section class="section home-section">
+  <div class="glow-orb glow-orb--orange" style="width:300px; height:300px; top:-100px; right:-100px;"></div>
+  <div class="glow-orb glow-orb--amber" style="width:250px; height:250px; bottom:-80px; left:-80px; animation-delay: -6s;"></div>
   <div class="container">
     <div class="center-head">
       <div class="mini-kicker">
         <span class="dot"></span>
         <span>Our Capabilities</span>
       </div>
-      <h2 class="center-title">High Performance Facility Solutions</h2>
+      <h2 class="center-title reveal">High Performance Facility Solutions</h2>
     </div>
 
-    <div class="cap-grid">
-      <article class="cap-card">
+    <div class="cap-grid reveal-stagger">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 21h18"/><path d="M7 21V7l5-4 5 4v14"/><path d="M9 21v-8h6v8"/>
@@ -76,7 +79,7 @@
         <p>Checklists, supervisor oversight, and corrective actions aligned to performance standards.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 19h16"/><path d="M6 17V7h12v10"/><path d="M8 7l4-4 4 4"/>
@@ -86,7 +89,7 @@
         <p>HEPA vacs, dust control, particulate cleanup, and specialized industrial environments.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 2v20"/><path d="M2 12h20"/><path d="M7 7l10 10"/><path d="M17 7 7 17"/>
@@ -96,7 +99,7 @@
         <p>Flexible staffing models for recurring services, surge needs, and mission windows.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/>
@@ -117,7 +120,7 @@
         <span class="dot"></span>
         <span>About Company</span>
       </div>
-      <h2 class="center-title">Trusted Partner in Federal Facility Services</h2>
+      <h2 class="center-title reveal">Trusted Partner in Federal Facility Services</h2>
     </div>
 
     <div class="about-grid">
@@ -215,7 +218,7 @@
       </div>
 
       <div class="industry-head__row">
-        <h2 class="industry-title">Reliable Facility Solutions<br/>Across Key Environments</h2>
+        <h2 class="industry-title reveal">Reliable Facility Solutions<br/>Across Key Environments</h2>
         <a class="see-all" href="industries-served.html">
           <span>See All<br/>Sectors</span>
           <span class="see-all__arrow">&#8599;</span>
@@ -240,7 +243,7 @@
         </ul>
       </div>
 
-      <img class="industry-img" alt="Facility Operations Management" src="assets/images/facility-operations.jpg"/>
+      <img class="industry-img reveal reveal-right" alt="Facility Operations Management" src="assets/images/facility-operations.jpg"/>
     </div>
   </div>
 </section>
@@ -268,8 +271,8 @@
       </div>
     </div>
 
-    <div class="blog-grid">
-      <article class="blog-card">
+    <div class="blog-grid reveal-stagger">
+      <article class="blog-card reveal">
         <a class="blog-thumb" href="blog.html">
           <img src="assets/images/Image-Blog-2.jpg" alt="Why Quality Control Matters" loading="lazy">
         </a>
@@ -281,7 +284,7 @@
         <p class="blog-excerpt">How simple checklists, inspections, and corrective actions help keep facilities audit-ready and prevent repeat issues.</p>
       </article>
 
-      <article class="blog-card">
+      <article class="blog-card reveal">
         <a class="blog-thumb" href="blog.html">
           <img src="assets/images/Image-Blog-3.jpg" alt="Choosing the Right Cleaning Methods" loading="lazy">
         </a>
@@ -293,7 +296,7 @@
         <p class="blog-excerpt">A practical guide to matching cleaning methods to surface types, safety constraints, and performance standards.</p>
       </article>
 
-      <article class="blog-card">
+      <article class="blog-card reveal">
         <a class="blog-thumb" href="blog.html">
           <img src="assets/images/Image-Blog-4.jpg" alt="Reducing Downtime with Planned Cleaning" loading="lazy">
         </a>

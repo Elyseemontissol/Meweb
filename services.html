@@ -25,6 +25,7 @@
 
 <section class="hero hero--services hero--zoom">
   <div class="hero-split__bg" style="background-image:url('assets/images/cement-plant-with-high-factory-structure-and-tower-N7J96QC.jpg');"></div>
+  <canvas id="particleCanvas"></canvas>
   <div class="hero-lightning"></div>
   <div class="hero-split__overlay"></div>
   <div class="container hero-split__inner">
@@ -40,13 +41,13 @@
 
 <section class="section home-section">
   <div class="container">
-    <div class="center-head">
+    <div class="center-head reveal">
       <div class="mini-kicker"><span class="dot"></span><span>Our Service Capabilities</span></div>
       <h2 class="center-title">High Performance Facility Solutions</h2>
     </div>
 
-    <div class="cap-grid cap-grid--2col">
-      <article class="cap-card">
+    <div class="cap-grid cap-grid--2col reveal-stagger">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M7 21V7l5-4 5 4v14"/><path d="M9 21v-8h6v8"/></svg>
         </div>
@@ -54,7 +55,7 @@
         <p>Routine and periodic cleaning for offices, restrooms, common areas, floors, and high-touch surfaces performed to meet performance standards and inspection readiness.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16"/><path d="M6 17V7h12v10"/><path d="M8 7l4-4 4 4"/></svg>
         </div>
@@ -62,7 +63,7 @@
         <p>HEPA vacuuming, dust/particulate cleanup, and controlled cleaning practices for industrial areas and specialized systems where cleanliness impacts safety and performance.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z"/></svg>
         </div>
@@ -70,7 +71,7 @@
         <p>Supervisor oversight, work checklists, issue tracking, and corrective actions to ensure consistent compliance with contract standards and reduced operational disruption.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c6-3 10-8 10-14l-10-5-10 5c0 6 4 11 10 14z"/></svg>
         </div>
@@ -78,7 +79,7 @@
         <p>Routine mowing, trimming, debris removal, and seasonal grounds maintenance to keep facilities, campuses, and public spaces clean, safe, and professionally maintained.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
@@ -86,7 +87,7 @@
         <p>Flexible workforce solutions including trained personnel for facility operations, maintenance, and project support to ensure work is completed efficiently and on schedule.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a1 1 0 0 1-1 1h-2"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
         </div>
@@ -94,7 +95,7 @@
         <p>Reliable transport coordination for equipment, materials, and personnel to support facility operations, project execution, and timely service delivery.</p>
       </article>
 
-      <article class="cap-card">
+      <article class="cap-card glow-border reveal">
         <div class="cap-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/></svg>
         </div>
@@ -107,31 +108,31 @@
 
 <section class="section home-section home-section--alt">
   <div class="container">
-    <div class="center-head">
+    <div class="center-head reveal">
       <div class="mini-kicker"><span class="dot"></span><span>What You Can Expect</span></div>
       <h2 class="center-title">Service Lines Built for Performance Standards</h2>
     </div>
 
     <div class="about-grid">
       <div>
-        <div class="cap-grid cap-grid--2col">
-          <article class="cap-card">
+        <div class="cap-grid cap-grid--2col reveal-stagger">
+          <article class="cap-card glow-border reveal">
             <h3>Janitorial &amp; Facility Services</h3>
             <p>Daily/weekly/monthly cleaning programs for restrooms, offices, hallways, breakrooms, and common areas. We focus on high-touch surfaces, floor care, and consistent presentation.</p>
           </article>
-          <article class="cap-card">
+          <article class="cap-card glow-border reveal">
             <h3>Industrial Cleaning &amp; Specialized Areas</h3>
             <p>Cleaning in industrial environments where dust and particulates must be controlled. Includes HEPA vacuuming, wipe-downs, and controlled methods appropriate for specialized work areas and equipment zones.</p>
           </article>
-          <article class="cap-card">
+          <article class="cap-card glow-border reveal">
             <h3>Waste Handling &amp; Dust Collection Support</h3>
             <p>Support cleaning around dust collection systems and work areas, ensuring safe removal and containment of debris/particulates per site requirements.</p>
           </article>
-          <article class="cap-card">
+          <article class="cap-card glow-border reveal">
             <h3>Supervision, Reporting &amp; Responsiveness</h3>
             <p>Clear communication, documented work completion, and rapid corrective actions. We maintain a disciplined schedule and respond quickly to priority requests.</p>
           </article>
-          <article class="cap-card">
+          <article class="cap-card glow-border reveal">
             <h3>Software Development</h3>
             <p>Custom web applications, dashboards, internal tools, and system integrations designed to improve operational efficiency, automate reporting, and support data-driven decision-making.</p>
           </article>

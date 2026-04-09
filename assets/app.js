@@ -1,22 +1,25 @@
 (() => {
-  // Mobile menu toggle
-  const header = document.querySelector('.site-header');
-  const btn = document.querySelector('.menu-btn');
-  if (header && btn) {
-    btn.addEventListener('click', () => {
+  // Mobile menu toggle — uses event delegation so it works even when
+  // the header is injected asynchronously by shared.js
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.menu-btn');
+    if (btn) {
+      const header = document.querySelector('.site-header');
+      if (!header) return;
       header.classList.toggle('open');
       const expanded = header.classList.contains('open');
       btn.setAttribute('aria-expanded', expanded);
-    });
-  }
+      return;
+    }
 
-  // Close mobile menu when clicking a nav link
-  const navLinks = document.querySelectorAll('.nav a');
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
+    // Close mobile menu when clicking a nav link
+    const navLink = e.target.closest('.nav a');
+    if (navLink) {
+      const header = document.querySelector('.site-header');
       if (header) header.classList.remove('open');
-      if (btn) btn.setAttribute('aria-expanded', 'false');
-    });
+      const menuBtn = document.querySelector('.menu-btn');
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    }
   });
 
   // FAQ Accordion

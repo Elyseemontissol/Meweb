@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Engine Wash Portal - Montissol Essentials</title>
+  <meta name="description" content="Access the Montissol Essentials Engine Wash Operations Portal.">
+  <meta property="og:title" content="Engine Wash Portal - Montissol Essentials">
+  <meta property="og:description" content="Access the Montissol Essentials Engine Wash Operations Portal.">
+  <meta property="og:image" content="https://montissolessentials.com/assets/images/Header-logo.png">
+  <meta property="og:url" content="https://montissolessentials.com/engine-wash.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon.png">
+
+  <style>
+    .portal-wrap {
+      width: 100%;
+      height: calc(100vh - 180px);
+      min-height: 600px;
+      background: #0a0a0a;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .portal-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .portal-header {
+      padding: 24px 0 16px;
+    }
+
+    .portal-header h1 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .portal-header p {
+      color: var(--text-secondary);
+      font-size: .9rem;
+    }
+
+    .portal-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .portal-actions a {
+      font-size: .82rem;
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .portal-actions a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div id="shared-header"></div>
+
+<main>
+
+<section class="section" style="padding-top:100px; padding-bottom:40px;">
+  <div class="container">
+    <div class="portal-header">
+      <div class="mini-kicker" style="margin-bottom:10px;">
+        <span class="dot"></span>
+        <span>Operations Portal</span>
+      </div>
+      <h1>Engine Wash Operations</h1>
+      <p>Access the engine wash operations portal directly below.</p>
+      <div class="portal-actions">
+        <a href="https://engine-wash-ops.vercel.app/" target="_blank" rel="noopener noreferrer">
+          Open in new tab
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="portal-wrap">
+      <iframe
+        class="portal-iframe"
+        src="https://engine-wash-ops.vercel.app/"
+        title="Engine Wash Operations Portal"
+        allow="clipboard-read; clipboard-write"
+        loading="lazy">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="shared-footer"></div>
+
+<script src="assets/shared.js"></script>
+<script src="assets/app.js"></script>
+
+</body>
+</html>

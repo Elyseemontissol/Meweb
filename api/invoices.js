@@ -111,7 +111,19 @@ export default async function handler(req, res) {
       const invoice = await redis.get(`invoice:${id}`);
       if (!invoice) return res.status(404).json({ ok: false, error: 'Invoice not found.' });
       const body = req.body || {};
-      if (body.status) invoice.status = body.status;
+      if (body.status !== undefined) invoice.status = body.status;
+      if (body.customer !== undefined) invoice.customer = body.customer;
+      if (body.email !== undefined) invoice.email = body.email;
+      if (body.description !== undefined) invoice.description = body.description;
+      if (body.issuedDate !== undefined) invoice.issuedDate = body.issuedDate;
+      if (body.dueDate !== undefined) invoice.dueDate = body.dueDate;
+      if (body.amount !== undefined) {
+        const amt = parseFloat(body.amount);
+        if (isNaN(amt) || amt < 1) {
+          return res.status(400).json({ ok: false, error: 'Amount must be at least $1.00.' });
+        }
+        invoice.amount = amt;
+      }
       await redis.set(`invoice:${id}`, invoice);
       return res.status(200).json({ ok: true, invoice });
     }

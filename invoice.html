@@ -438,7 +438,7 @@
 
       <!-- Create Invoice Form -->
       <div style="background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:24px;">
-        <h3 style="font-size:1rem; font-weight:800; margin-bottom:16px;">Create New Invoice</h3>
+        <h3 id="adminFormTitle" style="font-size:1rem; font-weight:800; margin-bottom:16px;">Create New Invoice</h3>
         <div class="pay-grid">
           <div class="field">
             <label for="newInvoiceId">Invoice Number <span class="req">*</span></label>
@@ -470,7 +470,10 @@
           </div>
         </div>
         <div id="adminCreateError" style="display:none; margin-top:12px; padding:12px 16px; border-radius:var(--radius); background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; font-size:.85rem; font-weight:600;"></div>
-        <button type="button" id="adminCreateBtn" class="btn primary" style="margin-top:16px; padding:14px 32px;">Create Invoice</button>
+        <div style="display:flex; gap:12px; margin-top:16px; align-items:center;">
+          <button type="button" id="adminCreateBtn" class="btn primary" style="padding:14px 32px;">Create Invoice</button>
+          <button type="button" id="adminCancelEditBtn" class="btn ghost" style="padding:14px 32px; display:none;">Cancel</button>
+        </div>
       </div>
 
       <!-- Invoice List -->
@@ -559,8 +562,11 @@
   var loginError = document.getElementById('adminLoginError');
   var logoutBtn = document.getElementById('adminLogoutBtn');
   var createBtn = document.getElementById('adminCreateBtn');
+  var cancelEditBtn = document.getElementById('adminCancelEditBtn');
+  var formTitle = document.getElementById('adminFormTitle');
   var createError = document.getElementById('adminCreateError');
   var invoiceList = document.getElementById('adminInvoiceList');
+  var editingId = null;
 
   function getToken() { return sessionStorage.getItem('me_admin_token'); }
   function setToken(t) { sessionStorage.setItem('me_admin_token', t); }
@@ -639,6 +645,7 @@
         invoiceList.innerHTML = '<p style="color:var(--text-muted); font-size:.85rem; text-align:center; padding:20px;">No invoices yet. Create one above.</p>';
         return;
       }
+      window._adminInvoices = data.invoices;
       invoiceList.innerHTML = data.invoices.map(function (inv) {
         var statusColor = inv.status === 'paid' ? '#22c55e' : '#f59e0b';
         var statusBg = inv.status === 'paid' ? 'rgba(34,197,94,.1)' : 'rgba(245,158,11,.1)';
@@ -647,15 +654,20 @@
             '<div style="font-weight:800; font-size:.95rem;">' + esc(inv.id) + ' — $' + inv.amount.toFixed(2) + '</div>' +
             '<div style="color:var(--text-secondary); font-size:.8rem; margin-top:2px;">' + esc(inv.description) + '</div>' +
             (inv.customer ? '<div style="color:var(--text-muted); font-size:.75rem; margin-top:2px;">' + esc(inv.customer) + (inv.email ? ' · ' + esc(inv.email) : '') + '</div>' : '') +
+            (inv.dueDate ? '<div style="color:var(--text-muted); font-size:.75rem; margin-top:2px;">Due: ' + esc(inv.dueDate) + '</div>' : '') +
           '</div>' +
-          '<div style="display:flex; gap:8px; align-items:center;">' +
+          '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
             '<span style="font-size:.7rem; font-weight:800; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:' + statusBg + '; color:' + statusColor + ';">' + inv.status + '</span>' +
-            (inv.status !== 'paid' ? '<button type="button" data-mark-paid="' + esc(inv.id) + '" class="btn ghost" style="padding:6px 12px; font-size:.75rem;">Mark Paid</button>' : '') +
+            '<button type="button" data-edit="' + esc(inv.id) + '" class="btn ghost" style="padding:6px 12px; font-size:.75rem;">Edit</button>' +
+            (inv.status !== 'paid' ? '<button type="button" data-mark-paid="' + esc(inv.id) + '" class="btn ghost" style="padding:6px 12px; font-size:.75rem; color:#22c55e;">Mark Paid</button>' : '') +
             '<button type="button" data-delete="' + esc(inv.id) + '" class="btn ghost" style="padding:6px 12px; font-size:.75rem; color:#f87171;">Delete</button>' +
           '</div>' +
         '</div>';
       }).join('');
 
+      invoiceList.querySelectorAll('[data-edit]').forEach(function (btn) {
+        btn.addEventListener('click', function () { startEdit(btn.getAttribute('data-edit')); });
+      });
       invoiceList.querySelectorAll('[data-mark-paid]').forEach(function (btn) {
         btn.addEventListener('click', function () { markPaid(btn.getAttribute('data-mark-paid')); });
       });
@@ -667,7 +679,39 @@
     }
   }
 
-  async function createInvoice() {
+  function resetForm() {
+    ['newInvoiceId', 'newInvoiceAmount', 'newInvoiceCustomer', 'newInvoiceEmail', 'newInvoiceDesc', 'newInvoiceIssued', 'newInvoiceDue'].forEach(function (id) {
+      document.getElementById(id).value = '';
+    });
+    editingId = null;
+    formTitle.textContent = 'Create New Invoice';
+    createBtn.textContent = 'Create Invoice';
+    cancelEditBtn.style.display = 'none';
+    document.getElementById('newInvoiceId').disabled = false;
+    createError.style.display = 'none';
+  }
+
+  function startEdit(id) {
+    var invoices = window._adminInvoices || [];
+    var inv = invoices.find(function (i) { return i.id === id; });
+    if (!inv) return;
+    editingId = id;
+    document.getElementById('newInvoiceId').value = inv.id;
+    document.getElementById('newInvoiceId').disabled = true;
+    document.getElementById('newInvoiceAmount').value = inv.amount;
+    document.getElementById('newInvoiceCustomer').value = inv.customer || '';
+    document.getElementById('newInvoiceEmail').value = inv.email || '';
+    document.getElementById('newInvoiceDesc').value = inv.description || '';
+    document.getElementById('newInvoiceIssued').value = inv.issuedDate || '';
+    document.getElementById('newInvoiceDue').value = inv.dueDate || '';
+    formTitle.textContent = 'Edit Invoice: ' + inv.id;
+    createBtn.textContent = 'Update Invoice';
+    cancelEditBtn.style.display = 'inline-flex';
+    createError.style.display = 'none';
+    document.querySelector('#adminModal > div').scrollTop = 0;
+  }
+
+  async function saveInvoice() {
     createError.style.display = 'none';
     var body = {
       id: document.getElementById('newInvoiceId').value.trim(),
@@ -686,25 +730,41 @@
     }
 
     createBtn.disabled = true;
-    createBtn.textContent = 'Creating...';
+    createBtn.textContent = editingId ? 'Saving...' : 'Creating...';
 
     try {
-      var res = await fetch('/api/invoices', {
-        method: 'POST',
+      var url, method, payload;
+      if (editingId) {
+        url = '/api/invoices?id=' + encodeURIComponent(editingId);
+        method = 'PATCH';
+        payload = {
+          amount: body.amount,
+          customer: body.customer,
+          email: body.email,
+          description: body.description,
+          issuedDate: body.issuedDate,
+          dueDate: body.dueDate,
+        };
+      } else {
+        url = '/api/invoices';
+        method = 'POST';
+        payload = body;
+      }
+
+      var res = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + getToken(),
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(payload),
       });
       var data = await res.json();
       if (!data.ok) {
-        createError.textContent = data.error || 'Failed to create invoice.';
+        createError.textContent = data.error || 'Failed to save invoice.';
         createError.style.display = 'block';
       } else {
-        ['newInvoiceId', 'newInvoiceAmount', 'newInvoiceCustomer', 'newInvoiceEmail', 'newInvoiceDesc', 'newInvoiceIssued', 'newInvoiceDue'].forEach(function (id) {
-          document.getElementById(id).value = '';
-        });
+        resetForm();
         loadInvoices();
       }
     } catch (err) {
@@ -712,7 +772,7 @@
       createError.style.display = 'block';
     } finally {
       createBtn.disabled = false;
-      createBtn.textContent = 'Create Invoice';
+      createBtn.textContent = editingId ? 'Update Invoice' : 'Create Invoice';
     }
   }
 
@@ -747,7 +807,8 @@
   loginBtn.addEventListener('click', tryLogin);
   pwdInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); tryLogin(); } });
   logoutBtn.addEventListener('click', logout);
-  createBtn.addEventListener('click', createInvoice);
+  createBtn.addEventListener('click', saveInvoice);
+  cancelEditBtn.addEventListener('click', resetForm);
 })();
 
 // ══════════════════════════════════════════════

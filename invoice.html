@@ -316,7 +316,19 @@
         </div>
 
         <h2 class="pay-title">Invoice Payment</h2>
-        <p class="pay-subtitle">Fill in your details below, then click the PayPal button to pay securely. You can pay with a credit card even without a PayPal account.</p>
+        <p class="pay-subtitle">Have an invoice number? Enter it below to auto-fill your payment. Or pay a custom amount manually.</p>
+
+        <!-- Invoice Lookup -->
+        <div id="invoiceLookup" style="background:rgba(231,77,16,.05); border:1px solid rgba(231,77,16,.2); border-radius:var(--radius); padding:20px; margin-bottom:24px;">
+          <label for="lookupInput" style="display:block; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text-secondary); margin-bottom:8px;">
+            Invoice / Quote Number
+          </label>
+          <div style="display:flex; gap:10px;">
+            <input id="lookupInput" type="text" placeholder="e.g. ME-2026-0414" autocomplete="off" style="flex:1;">
+            <button type="button" id="lookupBtn" class="btn primary" style="padding:12px 24px; white-space:nowrap;">Look Up</button>
+          </div>
+          <div id="lookupStatus" style="margin-top:10px; font-size:.82rem; display:none;"></div>
+        </div>
 
         <div id="payFormError"></div>
 
@@ -392,6 +404,86 @@
   </div>
 </section>
 
+<!-- Admin trigger button (floating, bottom-right) -->
+<button type="button" id="adminTriggerBtn" aria-label="Admin login" style="position:fixed; bottom:24px; right:24px; width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text-muted); cursor:pointer; z-index:100; backdrop-filter:blur(12px); transition:all .2s; display:flex; align-items:center; justify-content:center;">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+</button>
+
+<!-- Admin Modal -->
+<div id="adminModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:1000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(8px);">
+  <div style="background:var(--card); border-radius:var(--radius-xl); padding:40px; max-width:900px; width:100%; max-height:90vh; overflow-y:auto; border:1px solid var(--border); position:relative;">
+    <button type="button" id="adminCloseBtn" aria-label="Close" style="position:absolute; top:16px; right:16px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.5rem; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;">×</button>
+
+    <!-- Login Screen -->
+    <div id="adminLoginScreen">
+      <h2 style="font-size:1.6rem; font-weight:900; margin-bottom:8px;">Admin Sign In</h2>
+      <p style="color:var(--text-secondary); font-size:.9rem; margin-bottom:28px;">Sign in to manage invoices.</p>
+      <div class="field" style="margin-bottom:16px;">
+        <label for="adminPassword">Password</label>
+        <input id="adminPassword" type="password" placeholder="Enter admin password" autocomplete="current-password">
+      </div>
+      <div id="adminLoginError" style="display:none; margin-bottom:16px; padding:12px 16px; border-radius:var(--radius); background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; font-size:.85rem; font-weight:600;"></div>
+      <button type="button" id="adminLoginBtn" class="btn primary" style="width:100%; padding:14px;">Sign In</button>
+    </div>
+
+    <!-- Management Screen -->
+    <div id="adminManageScreen" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:1.6rem; font-weight:900; margin-bottom:4px;">Invoice Management</h2>
+          <p style="color:var(--text-secondary); font-size:.85rem;">Create and manage customer invoices.</p>
+        </div>
+        <button type="button" id="adminLogoutBtn" class="btn ghost" style="padding:10px 20px;">Logout</button>
+      </div>
+
+      <!-- Create Invoice Form -->
+      <div style="background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:24px;">
+        <h3 style="font-size:1rem; font-weight:800; margin-bottom:16px;">Create New Invoice</h3>
+        <div class="pay-grid">
+          <div class="field">
+            <label for="newInvoiceId">Invoice Number <span class="req">*</span></label>
+            <input id="newInvoiceId" type="text" placeholder="ME-2026-0414">
+          </div>
+          <div class="field">
+            <label for="newInvoiceAmount">Amount ($) <span class="req">*</span></label>
+            <input id="newInvoiceAmount" type="number" min="1" step="0.01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label for="newInvoiceCustomer">Customer Name</label>
+            <input id="newInvoiceCustomer" type="text" placeholder="Customer name">
+          </div>
+          <div class="field">
+            <label for="newInvoiceEmail">Customer Email</label>
+            <input id="newInvoiceEmail" type="email" placeholder="customer@example.com">
+          </div>
+          <div class="field">
+            <label for="newInvoiceIssued">Date Issued</label>
+            <input id="newInvoiceIssued" type="date">
+          </div>
+          <div class="field">
+            <label for="newInvoiceDue">Due Date</label>
+            <input id="newInvoiceDue" type="date">
+          </div>
+          <div class="field field-span-2">
+            <label for="newInvoiceDesc">Description <span class="req">*</span></label>
+            <textarea id="newInvoiceDesc" rows="3" placeholder="Service description"></textarea>
+          </div>
+        </div>
+        <div id="adminCreateError" style="display:none; margin-top:12px; padding:12px 16px; border-radius:var(--radius); background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; font-size:.85rem; font-weight:600;"></div>
+        <button type="button" id="adminCreateBtn" class="btn primary" style="margin-top:16px; padding:14px 32px;">Create Invoice</button>
+      </div>
+
+      <!-- Invoice List -->
+      <div>
+        <h3 style="font-size:1rem; font-weight:800; margin-bottom:12px;">Existing Invoices</h3>
+        <div id="adminInvoiceList" style="display:flex; flex-direction:column; gap:10px;">
+          <p style="color:var(--text-muted); font-size:.85rem; text-align:center; padding:20px;">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <div id="shared-footer"></div>
@@ -400,6 +492,267 @@
 <script src="assets/app.js"></script>
 
 <script>
+// ══════════════════════════════════════════════
+// INVOICE LOOKUP & ADMIN MANAGEMENT
+// ══════════════════════════════════════════════
+(function () {
+  var lookupInput = document.getElementById('lookupInput');
+  var lookupBtn = document.getElementById('lookupBtn');
+  var lookupStatus = document.getElementById('lookupStatus');
+
+  async function lookupInvoice() {
+    var id = lookupInput.value.trim();
+    if (!id) {
+      showLookupStatus('Please enter an invoice number.', 'error');
+      return;
+    }
+    lookupBtn.disabled = true;
+    lookupBtn.textContent = 'Looking up...';
+    showLookupStatus('Searching...', 'info');
+
+    try {
+      var res = await fetch('/api/invoices?id=' + encodeURIComponent(id));
+      var data = await res.json();
+      if (!data.ok) {
+        showLookupStatus(data.error || 'Invoice not found.', 'error');
+      } else {
+        var inv = data.invoice;
+        if (inv.status === 'paid') {
+          showLookupStatus('This invoice has already been paid.', 'error');
+        } else {
+          document.getElementById('payInvoice').value = inv.id;
+          document.getElementById('payAmount').value = inv.amount.toFixed(2);
+          document.getElementById('payMemo').value = inv.description || '';
+          document.getElementById('payAmount').dispatchEvent(new Event('input'));
+          showLookupStatus('Invoice found! $' + inv.amount.toFixed(2) + ' — ' + (inv.description || ''), 'success');
+        }
+      }
+    } catch (err) {
+      showLookupStatus('Could not look up invoice. Please try again.', 'error');
+    } finally {
+      lookupBtn.disabled = false;
+      lookupBtn.textContent = 'Look Up';
+    }
+  }
+
+  function showLookupStatus(msg, type) {
+    lookupStatus.textContent = msg;
+    lookupStatus.style.display = 'block';
+    if (type === 'error') lookupStatus.style.color = '#f87171';
+    else if (type === 'success') lookupStatus.style.color = '#22c55e';
+    else lookupStatus.style.color = 'var(--text-secondary)';
+  }
+
+  lookupBtn.addEventListener('click', lookupInvoice);
+  lookupInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); lookupInvoice(); }
+  });
+
+  // ── Admin modal ──
+  var adminTrigger = document.getElementById('adminTriggerBtn');
+  var adminModal = document.getElementById('adminModal');
+  var adminClose = document.getElementById('adminCloseBtn');
+  var loginScreen = document.getElementById('adminLoginScreen');
+  var manageScreen = document.getElementById('adminManageScreen');
+  var pwdInput = document.getElementById('adminPassword');
+  var loginBtn = document.getElementById('adminLoginBtn');
+  var loginError = document.getElementById('adminLoginError');
+  var logoutBtn = document.getElementById('adminLogoutBtn');
+  var createBtn = document.getElementById('adminCreateBtn');
+  var createError = document.getElementById('adminCreateError');
+  var invoiceList = document.getElementById('adminInvoiceList');
+
+  function getToken() { return sessionStorage.getItem('me_admin_token'); }
+  function setToken(t) { sessionStorage.setItem('me_admin_token', t); }
+  function clearToken() { sessionStorage.removeItem('me_admin_token'); }
+
+  function openModal() {
+    adminModal.style.display = 'flex';
+    if (getToken()) {
+      showManageScreen();
+    } else {
+      showLoginScreen();
+    }
+  }
+
+  function closeModal() { adminModal.style.display = 'none'; }
+
+  function showLoginScreen() {
+    loginScreen.style.display = 'block';
+    manageScreen.style.display = 'none';
+    loginError.style.display = 'none';
+    pwdInput.value = '';
+    setTimeout(function () { pwdInput.focus(); }, 100);
+  }
+
+  function showManageScreen() {
+    loginScreen.style.display = 'none';
+    manageScreen.style.display = 'block';
+    loadInvoices();
+  }
+
+  async function tryLogin() {
+    var pwd = pwdInput.value.trim();
+    if (!pwd) return;
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Signing in...';
+    loginError.style.display = 'none';
+
+    try {
+      var res = await fetch('/api/invoices', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + pwd },
+      });
+      if (res.status === 401) {
+        loginError.textContent = 'Incorrect password.';
+        loginError.style.display = 'block';
+      } else if (res.ok) {
+        setToken(pwd);
+        showManageScreen();
+      } else {
+        loginError.textContent = 'Login failed. Please try again.';
+        loginError.style.display = 'block';
+      }
+    } catch (err) {
+      loginError.textContent = 'Connection error. Please try again.';
+      loginError.style.display = 'block';
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Sign In';
+    }
+  }
+
+  function logout() {
+    clearToken();
+    showLoginScreen();
+  }
+
+  async function loadInvoices() {
+    invoiceList.innerHTML = '<p style="color:var(--text-muted); font-size:.85rem; text-align:center; padding:20px;">Loading...</p>';
+    try {
+      var res = await fetch('/api/invoices', {
+        headers: { 'Authorization': 'Bearer ' + getToken() },
+      });
+      if (res.status === 401) { logout(); return; }
+      var data = await res.json();
+      if (!data.ok || data.invoices.length === 0) {
+        invoiceList.innerHTML = '<p style="color:var(--text-muted); font-size:.85rem; text-align:center; padding:20px;">No invoices yet. Create one above.</p>';
+        return;
+      }
+      invoiceList.innerHTML = data.invoices.map(function (inv) {
+        var statusColor = inv.status === 'paid' ? '#22c55e' : '#f59e0b';
+        var statusBg = inv.status === 'paid' ? 'rgba(34,197,94,.1)' : 'rgba(245,158,11,.1)';
+        return '<div style="background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:var(--radius); padding:16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">' +
+          '<div style="flex:1; min-width:200px;">' +
+            '<div style="font-weight:800; font-size:.95rem;">' + esc(inv.id) + ' — $' + inv.amount.toFixed(2) + '</div>' +
+            '<div style="color:var(--text-secondary); font-size:.8rem; margin-top:2px;">' + esc(inv.description) + '</div>' +
+            (inv.customer ? '<div style="color:var(--text-muted); font-size:.75rem; margin-top:2px;">' + esc(inv.customer) + (inv.email ? ' · ' + esc(inv.email) : '') + '</div>' : '') +
+          '</div>' +
+          '<div style="display:flex; gap:8px; align-items:center;">' +
+            '<span style="font-size:.7rem; font-weight:800; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:' + statusBg + '; color:' + statusColor + ';">' + inv.status + '</span>' +
+            (inv.status !== 'paid' ? '<button type="button" data-mark-paid="' + esc(inv.id) + '" class="btn ghost" style="padding:6px 12px; font-size:.75rem;">Mark Paid</button>' : '') +
+            '<button type="button" data-delete="' + esc(inv.id) + '" class="btn ghost" style="padding:6px 12px; font-size:.75rem; color:#f87171;">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      invoiceList.querySelectorAll('[data-mark-paid]').forEach(function (btn) {
+        btn.addEventListener('click', function () { markPaid(btn.getAttribute('data-mark-paid')); });
+      });
+      invoiceList.querySelectorAll('[data-delete]').forEach(function (btn) {
+        btn.addEventListener('click', function () { deleteInvoice(btn.getAttribute('data-delete')); });
+      });
+    } catch (err) {
+      invoiceList.innerHTML = '<p style="color:#f87171; font-size:.85rem; text-align:center; padding:20px;">Error loading invoices.</p>';
+    }
+  }
+
+  async function createInvoice() {
+    createError.style.display = 'none';
+    var body = {
+      id: document.getElementById('newInvoiceId').value.trim(),
+      amount: document.getElementById('newInvoiceAmount').value,
+      customer: document.getElementById('newInvoiceCustomer').value.trim(),
+      email: document.getElementById('newInvoiceEmail').value.trim(),
+      description: document.getElementById('newInvoiceDesc').value.trim(),
+      issuedDate: document.getElementById('newInvoiceIssued').value,
+      dueDate: document.getElementById('newInvoiceDue').value,
+    };
+
+    if (!body.id || !body.amount || !body.description) {
+      createError.textContent = 'Invoice number, amount, and description are required.';
+      createError.style.display = 'block';
+      return;
+    }
+
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creating...';
+
+    try {
+      var res = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken(),
+        },
+        body: JSON.stringify(body),
+      });
+      var data = await res.json();
+      if (!data.ok) {
+        createError.textContent = data.error || 'Failed to create invoice.';
+        createError.style.display = 'block';
+      } else {
+        ['newInvoiceId', 'newInvoiceAmount', 'newInvoiceCustomer', 'newInvoiceEmail', 'newInvoiceDesc', 'newInvoiceIssued', 'newInvoiceDue'].forEach(function (id) {
+          document.getElementById(id).value = '';
+        });
+        loadInvoices();
+      }
+    } catch (err) {
+      createError.textContent = 'Connection error.';
+      createError.style.display = 'block';
+    } finally {
+      createBtn.disabled = false;
+      createBtn.textContent = 'Create Invoice';
+    }
+  }
+
+  async function markPaid(id) {
+    await fetch('/api/invoices?id=' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getToken(),
+      },
+      body: JSON.stringify({ status: 'paid' }),
+    });
+    loadInvoices();
+  }
+
+  async function deleteInvoice(id) {
+    if (!confirm('Delete invoice ' + id + '?')) return;
+    await fetch('/api/invoices?id=' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+    });
+    loadInvoices();
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  adminTrigger.addEventListener('click', openModal);
+  adminClose.addEventListener('click', closeModal);
+  adminModal.addEventListener('click', function (e) { if (e.target === adminModal) closeModal(); });
+  loginBtn.addEventListener('click', tryLogin);
+  pwdInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); tryLogin(); } });
+  logoutBtn.addEventListener('click', logout);
+  createBtn.addEventListener('click', createInvoice);
+})();
+
+// ══════════════════════════════════════════════
+// EXISTING PAYMENT FLOW
+// ══════════════════════════════════════════════
 (function () {
   // ── Amount preview ──
   var amountInput   = document.getElementById('payAmount');

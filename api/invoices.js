@@ -2,18 +2,23 @@ import { Redis } from '@upstash/redis';
 import crypto from 'crypto';
 
 const redis = Redis.fromEnv();
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-function checkAuth(req) {
+async function getAdminPassword() {
+  try {
+    const stored = await redis.get('admin:password');
+    if (stored) return stored;
+  } catch {}
+  return process.env.ADMIN_PASSWORD;
+}
+
+async function checkAuth(req) {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '').trim();
-  if (!ADMIN_PASSWORD || !token) return false;
-  if (token.length !== ADMIN_PASSWORD.length) return false;
+  const pwd = await getAdminPassword();
+  if (!pwd || !token) return false;
+  if (token.length !== pwd.length) return false;
   try {
-    return crypto.timingSafeEqual(
-      Buffer.from(token),
-      Buffer.from(ADMIN_PASSWORD)
-    );
+    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(pwd));
   } catch {
     return false;
   }
@@ -42,7 +47,7 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!checkAuth(req)) {
+    if (!(await checkAuth(req))) {
       return res.status(401).json({ ok: false, error: 'Unauthorized' });
     }
 

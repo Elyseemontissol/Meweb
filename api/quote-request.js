@@ -40,7 +40,7 @@ export default async function handler(req, res) {
   try {
     const freqList = Array.isArray(frequency) ? frequency.join(', ') : (frequency || '');
     await resend.emails.send({
-      from: 'Montissol Website <noreply@montissolessentials.com>',
+      from: 'Montissol Essentials <noreply@montissolessentials.com>',
       to: ['info@montissolessentials.com', 'ElyseeM@MontissolEssentials.com'],
       replyTo: email,
       subject: `[Quote Request] ${serviceType} — ${location} — ${fullName}`,

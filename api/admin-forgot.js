@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     const resetUrl = `https://montissolessentials.com/invoice.html#reset=${token}`;
 
     await resend.emails.send({
-      from: 'Montissol Website <noreply@montissolessentials.com>',
+      from: 'Montissol Essentials <noreply@montissolessentials.com>',
       to: 'ElyseeM@MontissolEssentials.com',
       subject: 'Admin Password Reset Request',
       html: `

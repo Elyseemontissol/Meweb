@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   try {
     await resend.emails.send({
-      from: 'Montissol Website <noreply@montissolessentials.com>',
+      from: 'Montissol Essentials <noreply@montissolessentials.com>',
       to: 'ElyseeM@MontissolEssentials.com',
       subject: `[Website] New Newsletter Subscriber`,
       html: `

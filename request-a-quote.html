@@ -55,8 +55,12 @@
             <input class="q-input" id="fullName" name="fullName" type="text" required placeholder="Your name">
           </div>
           <div class="q-field">
-            <label class="q-label" for="company">Company / Organization</label>
-            <input class="q-input" id="company" name="company" type="text" placeholder="Company name (optional)">
+            <label class="q-label" for="companyName">Company / Organization</label>
+            <input class="q-input" id="companyName" name="companyName" type="text" placeholder="Company name (optional)">
+          </div>
+          <div class="q-field" style="display:none;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
           <div class="q-field">
             <label class="q-label" for="email">Email *</label>
@@ -150,10 +154,7 @@
         </form>
 
         <div class="q-alert success" id="successMsg">
-          Your request is ready. If your email app didn't open, you can copy the message below and send it to
-          <strong>Info@MontissolEssentials.com</strong>.
-          <div class="q-hr"></div>
-          <pre id="emailPreview" style="white-space:pre-wrap; margin:0; font:inherit;"></pre>
+          <strong>Thank you!</strong> Your quote request has been submitted. Our team will review it and get back to you shortly at the email you provided.
         </div>
 
         <div class="q-alert error" id="errorMsg">
@@ -197,19 +198,20 @@
     const resetBtn = document.getElementById('resetBtn');
     const successMsg = document.getElementById('successMsg');
     const errorMsg = document.getElementById('errorMsg');
-    const emailPreview = document.getElementById('emailPreview');
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     function getCheckedValues(name){
       return Array.from(form.querySelectorAll('input[name="' + name + '"]:checked')).map(i => i.value);
     }
 
-    function escapeForMailto(s){
-      return encodeURIComponent(s).replace(/%20/g, '+');
-    }
-
     function hideAlerts(){
       successMsg.classList.remove('show');
       errorMsg.classList.remove('show');
+    }
+
+    function showError(text){
+      errorMsg.innerHTML = text;
+      errorMsg.classList.add('show');
     }
 
     resetBtn.addEventListener('click', () => {
@@ -218,51 +220,57 @@
       form.querySelector('#fullName')?.focus();
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideAlerts();
 
-      const fullName = form.fullName.value.trim();
-      const company = form.company.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const serviceType = form.serviceType.value.trim();
-      const industry = form.industry.value.trim();
-      const location = form.location.value.trim();
-      const startDate = form.startDate.value;
-      const scope = form.scope.value.trim();
-      const budget = form.budget.value.trim();
-      const timeline = form.timeline.value.trim();
-      const siteAccess = form.siteAccess.value.trim();
-      const frequency = getCheckedValues('frequency');
+      const payload = {
+        fullName: form.fullName.value.trim(),
+        companyName: form.companyName.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        serviceType: form.serviceType.value.trim(),
+        industry: form.industry.value.trim(),
+        location: form.location.value.trim(),
+        startDate: form.startDate.value,
+        scope: form.scope.value.trim(),
+        budget: form.budget.value.trim(),
+        timeline: form.timeline.value.trim(),
+        siteAccess: form.siteAccess.value.trim(),
+        frequency: getCheckedValues('frequency'),
+        website: form.website.value,
+      };
 
-      if (!fullName || !email || !serviceType || !location || !scope){
-        errorMsg.classList.add('show');
+      if (!payload.fullName || !payload.email || !payload.serviceType || !payload.location || !payload.scope){
+        showError('Please complete the required fields: <strong>Name</strong>, <strong>Email</strong>, <strong>Service Type</strong>, <strong>Location</strong>, and <strong>Scope</strong>.');
         return;
       }
 
-      const subject = 'Request a Quote - ' + serviceType + ' (' + location + ')';
-      const body =
-'Hello Montissol Essentials Team,\n\nI would like to request a quote. Here are the details:\n\nName: ' + fullName +
-'\nCompany/Organization: ' + (company || 'N/A') +
-'\nEmail: ' + email +
-'\nPhone: ' + (phone || 'N/A') +
-'\n\nService Type: ' + serviceType +
-'\nIndustry/Environment: ' + (industry || 'N/A') +
-'\nLocation: ' + location +
-'\nDesired Start Date: ' + (startDate || 'N/A') +
-'\nFrequency: ' + (frequency.length ? frequency.join(', ') : 'N/A') +
-'\n\nBudget: ' + (budget || 'N/A') +
-'\nTimeline: ' + (timeline || 'N/A') +
-'\nSite Access/Requirements: ' + (siteAccess || 'N/A') +
-'\n\nScope / Details:\n' + scope +
-'\n\nThank you,\n' + fullName;
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
 
-      emailPreview.textContent = body;
-      successMsg.classList.add('show');
+      try {
+        const res = await fetch('/api/quote-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
 
-      const mailto = 'mailto:Info@MontissolEssentials.com?subject=' + escapeForMailto(subject) + '&body=' + escapeForMailto(body);
-      window.location.href = mailto;
+        if (!data.ok) {
+          showError(data.error || 'Something went wrong. Please try again or email Info@MontissolEssentials.com.');
+        } else {
+          form.reset();
+          successMsg.classList.add('show');
+          successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
     });
   })();
 </script>

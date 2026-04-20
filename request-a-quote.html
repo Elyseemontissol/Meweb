@@ -143,6 +143,11 @@
             <label class="q-label" for="siteAccess">Site Access / Requirements (optional)</label>
             <input class="q-input" id="siteAccess" name="siteAccess" type="text" placeholder="Example: badge access, background checks, after-hours only, escort required, etc.">
           </div>
+          <div class="q-field full">
+            <label class="q-label" for="captchaAnswer">Verify you're human: <span id="captchaQuestion" style="font-weight:800;"></span> <span class="req">*</span></label>
+            <input class="q-input" id="captchaAnswer" name="captchaAnswer" type="text" required autocomplete="off" placeholder="Enter your answer" style="max-width:240px;">
+            <input type="hidden" id="captchaExpected" value="">
+          </div>
           <div class="q-actions">
             <button class="btn primary-solid" type="submit">Submit Request</button>
             <button class="btn outline" type="button" id="resetBtn">Clear</button>
@@ -199,6 +204,15 @@
     const successMsg = document.getElementById('successMsg');
     const errorMsg = document.getElementById('errorMsg');
     const submitBtn = form.querySelector('button[type="submit"]');
+    const formLoadedAt = Date.now();
+
+    function generateCaptcha(){
+      const a = Math.floor(Math.random() * 10) + 1;
+      const b = Math.floor(Math.random() * 10) + 1;
+      document.getElementById('captchaQuestion').textContent = 'What is ' + a + ' + ' + b + '?';
+      document.getElementById('captchaExpected').value = String(a + b);
+    }
+    generateCaptcha();
 
     function getCheckedValues(name){
       return Array.from(form.querySelectorAll('input[name="' + name + '"]:checked')).map(i => i.value);
@@ -217,12 +231,24 @@
     resetBtn.addEventListener('click', () => {
       form.reset();
       hideAlerts();
+      generateCaptcha();
       form.querySelector('#fullName')?.focus();
     });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideAlerts();
+
+      // CAPTCHA check
+      const captchaAnswer = form.captchaAnswer.value.trim();
+      const captchaExpected = document.getElementById('captchaExpected').value;
+      if (captchaAnswer !== captchaExpected) {
+        showError('Incorrect CAPTCHA answer. Please try again.');
+        generateCaptcha();
+        form.captchaAnswer.value = '';
+        form.captchaAnswer.focus();
+        return;
+      }
 
       const payload = {
         fullName: form.fullName.value.trim(),
@@ -239,6 +265,7 @@
         siteAccess: form.siteAccess.value.trim(),
         frequency: getCheckedValues('frequency'),
         website: form.website.value,
+        elapsedMs: Date.now() - formLoadedAt,
       };
 
       if (!payload.fullName || !payload.email || !payload.serviceType || !payload.location || !payload.scope){
@@ -260,8 +287,10 @@
 
         if (!data.ok) {
           showError(data.error || 'Something went wrong. Please try again or email Info@MontissolEssentials.com.');
+          generateCaptcha();
         } else {
           form.reset();
+          generateCaptcha();
           successMsg.classList.add('show');
           successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }

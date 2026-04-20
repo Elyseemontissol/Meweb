@@ -7,10 +7,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
   }
 
-  const { email, company } = req.body || {};
+  const { email, company, elapsedMs } = req.body || {};
 
   // Honeypot spam trap - if filled, silently accept
   if (company) {
+    return res.status(200).json({ ok: true });
+  }
+
+  // Submitted too fast = bot
+  if (typeof elapsedMs === 'number' && elapsedMs < 2000) {
     return res.status(200).json({ ok: true });
   }
 

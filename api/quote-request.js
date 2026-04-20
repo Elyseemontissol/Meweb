@@ -22,10 +22,16 @@ export default async function handler(req, res) {
     timeline,
     siteAccess,
     website, // honeypot
+    elapsedMs,
   } = req.body || {};
 
   // Honeypot spam trap
   if (website) {
+    return res.status(200).json({ ok: true });
+  }
+
+  // Too fast = bot (real humans take at least a few seconds to fill out the form)
+  if (typeof elapsedMs === 'number' && elapsedMs < 3000) {
     return res.status(200).json({ ok: true });
   }
 
@@ -35,6 +41,12 @@ export default async function handler(req, res) {
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ ok: false, error: 'Please enter a valid email address.' });
+  }
+
+  // Gibberish detection: flag strings that look like random keyboard mashing
+  if (looksLikeGibberish(fullName) || looksLikeGibberish(location) || looksLikeGibberish(scope)) {
+    console.log('Spam rejected (gibberish):', { fullName, location });
+    return res.status(200).json({ ok: true });
   }
 
   try {
@@ -80,4 +92,42 @@ function esc(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// Heuristic spam detection for random keyboard-mashing strings.
+function looksLikeGibberish(str) {
+  if (!str || typeof str !== 'string') return false;
+  const s = str.trim();
+  if (s.length < 6) return false;
+
+  // Strip spaces/punctuation for analysis
+  const letters = s.replace(/[^a-zA-Z]/g, '');
+  if (letters.length < 6) return false;
+
+  // Check 1: mixed-case chaos — ALTERnATInG or raNDoMcAsE within a single "word"
+  const words = s.split(/\s+/).filter(w => /[a-zA-Z]/.test(w));
+  for (const w of words) {
+    if (w.length < 6) continue;
+    let caseChanges = 0;
+    for (let i = 1; i < w.length; i++) {
+      const prev = w[i - 1];
+      const cur = w[i];
+      if (/[a-zA-Z]/.test(prev) && /[a-zA-Z]/.test(cur)) {
+        if (prev === prev.toLowerCase() && cur === cur.toUpperCase()) caseChanges++;
+        else if (prev === prev.toUpperCase() && cur === cur.toLowerCase()) caseChanges++;
+      }
+    }
+    // If more than 1/3 of the word has case changes, it's gibberish
+    if (caseChanges >= Math.max(3, Math.floor(w.length / 3))) return true;
+  }
+
+  // Check 2: very low vowel ratio (real text typically 30-45% vowels)
+  const vowels = (letters.match(/[aeiouAEIOU]/g) || []).length;
+  const ratio = vowels / letters.length;
+  if (letters.length >= 8 && (ratio < 0.15 || ratio > 0.75)) return true;
+
+  // Check 3: 5+ consecutive consonants (e.g., "pfPuHWZL")
+  if (/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]{5,}/.test(letters)) return true;
+
+  return false;
 }

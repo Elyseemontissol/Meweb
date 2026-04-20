@@ -752,6 +752,86 @@ input, textarea, select, button { font: inherit; }
 .no-results { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 1.1rem; }
 
 /* ============================================================
+   HIRING BANNER
+   ============================================================ */
+.hiring-banner {
+  padding: 80px 0;
+  background: linear-gradient(135deg, rgba(231,77,16,.08) 0%, rgba(245,158,11,.04) 50%, rgba(231,77,16,.12) 100%);
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(231,77,16,.15);
+  border-bottom: 1px solid rgba(231,77,16,.15);
+}
+.hiring-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -10%;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(231,77,16,.15), transparent 70%);
+  pointer-events: none;
+}
+.hiring-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -40%; right: -10%;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,.1), transparent 70%);
+  pointer-events: none;
+}
+.hiring-banner__inner {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.hiring-banner__kicker {
+  margin-bottom: 16px;
+}
+.hiring-banner__title {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.hiring-banner__text {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 560px;
+}
+.hiring-banner__cta {
+  text-align: center;
+}
+.hiring-banner__btn {
+  padding: 18px 36px !important;
+  font-size: 1rem !important;
+  white-space: nowrap;
+}
+.hiring-banner__email {
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: .85rem;
+}
+.hiring-banner__email a {
+  color: var(--brand);
+  font-weight: 700;
+  text-decoration: none;
+}
+.hiring-banner__email a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .hiring-banner { padding: 56px 0; }
+  .hiring-banner__inner { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+  .hiring-banner__text { margin: 0 auto; }
+}
+
+/* ============================================================
    NEWSLETTER
    ============================================================ */
 .newsletter-full {

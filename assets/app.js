@@ -44,6 +44,3 @@
   });
 
 })();
-
-// Newsletter form handling is in the inline script in index.html
-// (uses fetch POST to /api/newsletter via Resend).

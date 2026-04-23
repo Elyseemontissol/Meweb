@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Loader Prototype — Montissol Essentials</title>
+<style>
+  :root {
+    --brand: #E74D10;
+    --brand-light: #ff6a33;
+    --amber: #f59e0b;
+    --ink: #e8e8e8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #000;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .loader-stage {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #000;
+  }
+
+  .loader {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    display: grid;
+    place-items: center;
+  }
+
+  /* ── Whirl rings around globe ── */
+  .whirl {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .whirl--outer {
+    border: 1px dashed rgba(231, 77, 16, 0.35);
+    animation: spin 8s linear infinite;
+  }
+  .whirl--outer::before,
+  .whirl--outer::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--brand);
+    top: -3px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 14px var(--brand);
+  }
+  .whirl--outer::after {
+    top: auto; bottom: -3px;
+    background: var(--amber);
+    box-shadow: 0 0 14px var(--amber);
+  }
+
+  .whirl--mid {
+    inset: 14px;
+    border: 1px solid rgba(245, 158, 11, 0.18);
+    animation: spinReverse 6s linear infinite;
+  }
+
+  .whirl--inner {
+    inset: 24px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(231, 77, 16, 0.55) 45deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(245, 158, 11, 0.35) 225deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    mask: radial-gradient(circle, transparent 52%, #000 53%, #000 57%, transparent 58%);
+    -webkit-mask: radial-gradient(circle, transparent 52%, #000 53%, #000 57%, transparent 58%);
+    animation: spin 2.5s linear infinite;
+  }
+
+  /* ── Globe (SVG) ── */
+  .globe-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(0 0 30px rgba(231, 77, 16, 0.35));
+  }
+  .globe-wrap svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .globe-rotator {
+    transform-origin: center;
+    animation: spin 18s linear infinite;
+  }
+  .globe-ring {
+    fill: none;
+    stroke: rgba(231, 77, 16, 0.55);
+    stroke-width: 1.2;
+  }
+  .globe-grid {
+    fill: none;
+    stroke: rgba(231, 77, 16, 0.22);
+    stroke-width: 0.7;
+  }
+  .continent {
+    fill: var(--brand);
+    opacity: 0.88;
+  }
+  .continent--amber {
+    fill: var(--amber);
+    opacity: 0.85;
+  }
+
+  /* Glow pulse on the globe's edge */
+  .glow-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(231, 77, 16, 0.5);
+    animation: pulse 2.2s ease-out infinite;
+    pointer-events: none;
+  }
+
+  /* ── Brand text ── */
+  .brand-label {
+    position: absolute;
+    bottom: -56px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #fff 0%, var(--brand-light) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textFade 2.5s ease-in-out infinite;
+  }
+  .brand-label::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  }
+
+  /* ── Animations ── */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes spinReverse {
+    from { transform: rotate(360deg); }
+    to   { transform: rotate(0deg); }
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(231, 77, 16, 0.55); }
+    100% { box-shadow: 0 0 0 34px rgba(231, 77, 16, 0); }
+  }
+  @keyframes textFade {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .whirl--outer, .whirl--mid, .whirl--inner,
+    .globe-rotator, .glow-pulse, .brand-label {
+      animation: none !important;
+    }
+  }
+
+  /* Preview controls (remove when integrating) */
+  .preview-hint {
+    position: fixed;
+    top: 20px; left: 20px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-hint">Loader Prototype · 260×260 container · 200×200 globe</div>
+
+<div class="loader-stage">
+  <div class="loader">
+
+    <!-- Whirl rings -->
+    <div class="whirl whirl--outer"></div>
+    <div class="whirl whirl--mid"></div>
+    <div class="whirl whirl--inner"></div>
+
+    <!-- Globe -->
+    <div class="globe-wrap">
+      <div class="glow-pulse"></div>
+      <svg viewBox="-100 -100 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer globe ring -->
+        <circle class="globe-ring" cx="0" cy="0" r="95"/>
+
+        <!-- Rotating contents -->
+        <g class="globe-rotator">
+          <!-- Clip to the sphere so continents stay inside -->
+          <defs>
+            <clipPath id="sphere">
+              <circle cx="0" cy="0" r="94"/>
+            </clipPath>
+          </defs>
+
+          <g clip-path="url(#sphere)">
+            <!-- Latitude lines -->
+            <ellipse class="globe-grid" cx="0" cy="-70" rx="65" ry="6"/>
+            <ellipse class="globe-grid" cx="0" cy="-35" rx="88" ry="10"/>
+            <ellipse class="globe-grid" cx="0" cy="0"   rx="94" ry="12"/>
+            <ellipse class="globe-grid" cx="0" cy="35"  rx="88" ry="10"/>
+            <ellipse class="globe-grid" cx="0" cy="70"  rx="65" ry="6"/>
+
+            <!-- Longitude lines (meridians) -->
+            <ellipse class="globe-grid" cx="0" cy="0" rx="24" ry="94"/>
+            <ellipse class="globe-grid" cx="0" cy="0" rx="54" ry="94"/>
+            <ellipse class="globe-grid" cx="0" cy="0" rx="78" ry="94"/>
+            <line class="globe-grid" x1="0" y1="-94" x2="0" y2="94"/>
+
+            <!-- North America -->
+            <path class="continent" d="
+              M -82,-48 L -70,-58 L -55,-58 L -40,-50 L -32,-38 L -38,-30
+              L -45,-22 L -50,-10 L -58,-5 L -62,6 L -70,6 L -74,-2
+              L -82,-8 L -86,-20 L -90,-32 L -86,-42 Z" />
+
+            <!-- Central America sliver -->
+            <path class="continent" d="
+              M -45,-2 L -38,4 L -32,12 L -26,18 L -28,22 L -34,18 L -42,8 Z" />
+
+            <!-- South America -->
+            <path class="continent" d="
+              M -38,12 L -28,12 L -20,22 L -18,35 L -22,50 L -28,62 L -34,70
+              L -38,62 L -40,48 L -42,30 L -40,18 Z" />
+
+            <!-- Greenland -->
+            <path class="continent--amber" d="
+              M -28,-72 L -18,-78 L -10,-74 L -12,-64 L -22,-60 L -28,-64 Z" />
+
+            <!-- Europe -->
+            <path class="continent" d="
+              M -4,-58 L 6,-62 L 16,-58 L 22,-50 L 18,-44 L 10,-40
+              L 0,-42 L -6,-48 Z" />
+
+            <!-- Africa -->
+            <path class="continent" d="
+              M 4,-30 L 14,-28 L 22,-20 L 28,-8 L 32,6 L 30,18 L 26,30
+              L 18,40 L 10,38 L 4,30 L 0,16 L -2,0 L 0,-14 Z" />
+
+            <!-- Asia (large) -->
+            <path class="continent" d="
+              M 20,-62 L 40,-64 L 60,-58 L 78,-50 L 88,-36 L 80,-24
+              L 68,-18 L 58,-10 L 48,-6 L 38,-14 L 28,-20 L 20,-30
+              L 18,-42 L 22,-52 Z" />
+
+            <!-- India peninsula -->
+            <path class="continent" d="
+              M 38,-14 L 46,-12 L 50,-2 L 46,8 L 40,10 L 36,0 Z" />
+
+            <!-- Southeast Asia / Indonesia -->
+            <path class="continent--amber" d="
+              M 58,0 L 68,2 L 76,8 L 70,14 L 60,14 L 54,8 Z" />
+
+            <!-- Australia -->
+            <path class="continent" d="
+              M 56,30 L 72,28 L 84,34 L 88,42 L 82,50 L 70,52 L 60,48 L 54,38 Z" />
+
+            <!-- Antarctica hint -->
+            <path class="continent--amber" d="
+              M -90,80 L -40,74 L 0,78 L 40,74 L 90,80 L 90,94 L -90,94 Z" />
+          </g>
+        </g>
+
+        <!-- Static front-face highlight (subtle) -->
+        <ellipse cx="-30" cy="-30" rx="28" ry="20" fill="rgba(255,255,255,0.04)"/>
+      </svg>
+    </div>
+
+    <!-- Brand label -->
+    <div class="brand-label">Montissol Essentials L.L.C</div>
+
+  </div>
+</div>
+
+</body>
+</html>

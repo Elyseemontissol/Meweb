@@ -1,3 +1,24 @@
+// Inject the page loader as early as possible
+(async function () {
+  try {
+    const res = await fetch('assets/loader.html');
+    const html = await res.text();
+    const mount = document.createElement('div');
+    mount.innerHTML = html;
+    // Insert at the start of body so it overlays everything
+    document.body.insertBefore(mount, document.body.firstChild);
+    // Execute any <script> tags inside the loader markup (innerHTML doesn't run them)
+    mount.querySelectorAll('script').forEach(old => {
+      const s = document.createElement('script');
+      if (old.src) s.src = old.src;
+      s.textContent = old.textContent;
+      old.parentNode.replaceChild(s, old);
+    });
+  } catch (err) {
+    console.warn('Loader could not be injected:', err);
+  }
+})();
+
 (async function () {
   const headerEl = document.getElementById('shared-header');
   const footerEl = document.getElementById('shared-footer');

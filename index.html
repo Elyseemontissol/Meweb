@@ -608,7 +608,8 @@ setInterval(rotateHero, 9000);
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
   function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    // Lower DPR cap to keep GPU load light
+    const dpr = Math.min(window.devicePixelRatio || 1, 1);
     const hero = canvas.parentElement;
     const w = Math.max(1, Math.floor(hero.offsetWidth * dpr));
     const h = Math.max(1, Math.floor(hero.offsetHeight * dpr));
@@ -620,9 +621,36 @@ setInterval(rotateHero, 9000);
   resize();
   window.addEventListener('resize', resize);
 
+  // Pause rendering when hero is offscreen so scroll stays smooth
+  let visible = true;
+  const hero = canvas.parentElement;
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      if (visible) requestAnimationFrame(tick);
+    }, { threshold: 0 });
+    io.observe(hero);
+  }
+
+  // Pause when tab is hidden
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && visible) requestAnimationFrame(tick);
+  });
+
+  // Cap to ~30fps — clouds drift slowly so this is plenty
+  const targetFrameMs = 1000 / 30;
+  let lastFrame = 0;
   const start = performance.now();
-  function tick() {
-    const t = (performance.now() - start) / 1000;
+
+  function tick(now) {
+    if (!visible || document.hidden) return;
+    if (!now) now = performance.now();
+    if (now - lastFrame < targetFrameMs) {
+      requestAnimationFrame(tick);
+      return;
+    }
+    lastFrame = now;
+    const t = (now - start) / 1000;
     gl.uniform1f(uTime, t);
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);

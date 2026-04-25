@@ -547,9 +547,11 @@ function rotateHero() {
     currentHeroImage = (currentHeroImage + 1) % heroImages.length;
     heroBg.style.backgroundImage = "url('" + heroImages[currentHeroImage] + "')";
     heroBg.style.opacity = "1";
-    // hide lightning on non-cloud images
+    // hide lightning and clouds on non-cement-plant images
     var lEl = window._lightningEl;
     if (lEl) lEl.style.display = currentHeroImage === 0 ? "" : "none";
+    var cEl = document.getElementById('cloudsCanvas');
+    if (cEl) cEl.style.opacity = currentHeroImage === 0 ? '' : '0';
   }, 1500);
 }
 

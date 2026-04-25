@@ -543,6 +543,9 @@ const heroBg = document.getElementById("heroBg");
 
 function rotateHero() {
   heroBg.style.opacity = "0";
+  // Fade clouds out immediately so they don't hover over the empty/transitioning image
+  var cEl = document.getElementById('cloudsCanvas');
+  if (cEl) cEl.style.opacity = '0';
   setTimeout(() => {
     currentHeroImage = (currentHeroImage + 1) % heroImages.length;
     heroBg.style.backgroundImage = "url('" + heroImages[currentHeroImage] + "')";
@@ -550,7 +553,6 @@ function rotateHero() {
     // hide lightning and clouds on non-cement-plant images
     var lEl = window._lightningEl;
     if (lEl) lEl.style.display = currentHeroImage === 0 ? "" : "none";
-    var cEl = document.getElementById('cloudsCanvas');
     if (cEl) cEl.style.opacity = currentHeroImage === 0 ? '' : '0';
   }, 1500);
 }

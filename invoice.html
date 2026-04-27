@@ -426,6 +426,11 @@
         <label for="adminPassword">Password</label>
         <input id="adminPassword" type="password" placeholder="Enter admin password" autocomplete="current-password">
       </div>
+      <div class="field" style="margin-bottom:16px;">
+        <label for="adminLoginCaptcha">Are you human? <span id="adminLoginCaptchaQ" style="font-weight:800;"></span></label>
+        <input id="adminLoginCaptcha" type="text" autocomplete="off" placeholder="Enter your answer">
+        <input type="hidden" id="adminLoginCaptchaExpected">
+      </div>
       <div id="adminLoginError" style="display:none; margin-bottom:16px; padding:12px 16px; border-radius:var(--radius); background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; font-size:.85rem; font-weight:600;"></div>
       <button type="button" id="adminLoginBtn" class="btn primary" style="width:100%; padding:14px;">Sign In</button>
       <div style="text-align:center; margin-top:16px;">
@@ -637,11 +642,23 @@
     resetScreen.style.display = 'none';
   }
 
+  function generateLoginCaptcha() {
+    var a = Math.floor(Math.random() * 10) + 1;
+    var b = Math.floor(Math.random() * 10) + 1;
+    var qEl = document.getElementById('adminLoginCaptchaQ');
+    var expEl = document.getElementById('adminLoginCaptchaExpected');
+    var ansEl = document.getElementById('adminLoginCaptcha');
+    if (qEl) qEl.textContent = 'What is ' + a + ' + ' + b + '?';
+    if (expEl) expEl.value = String(a + b);
+    if (ansEl) ansEl.value = '';
+  }
+
   function showLoginScreen() {
     hideAllScreens();
     loginScreen.style.display = 'block';
     loginError.style.display = 'none';
     pwdInput.value = '';
+    generateLoginCaptcha();
     setTimeout(function () { pwdInput.focus(); }, 100);
   }
 
@@ -757,6 +774,18 @@
   async function tryLogin() {
     var pwd = pwdInput.value.trim();
     if (!pwd) return;
+
+    // Verify CAPTCHA first
+    var captchaInput = document.getElementById('adminLoginCaptcha');
+    var captchaExpected = document.getElementById('adminLoginCaptchaExpected').value;
+    if (!captchaInput.value.trim() || captchaInput.value.trim() !== captchaExpected) {
+      loginError.textContent = 'Incorrect answer to the human verification question.';
+      loginError.style.display = 'block';
+      generateLoginCaptcha();
+      captchaInput.focus();
+      return;
+    }
+
     loginBtn.disabled = true;
     loginBtn.textContent = 'Signing in...';
     loginError.style.display = 'none';
@@ -782,6 +811,8 @@
     } finally {
       loginBtn.disabled = false;
       loginBtn.textContent = 'Sign In';
+      // Regenerate CAPTCHA after each attempt
+      generateLoginCaptcha();
     }
   }
 

@@ -211,19 +211,40 @@
 
 <script>
 (function () {
+  // Total reveal duration (longest delay + duration) + a brief hold
+  var MIN_DISPLAY_MS = 3000;
+  var SAFETY_MAX_MS = 7000;
+
+  var startedAt = Date.now();
+  var pageLoaded = document.readyState === 'complete';
+  var hidden = false;
+
   function hideLoader() {
+    if (hidden) return;
+    hidden = true;
     var loader = document.getElementById('pageLoader');
     if (!loader) return;
     loader.classList.add('is-hidden');
     setTimeout(function () { loader.remove(); }, 600);
   }
 
-  if (document.readyState === 'complete') {
-    hideLoader();
-  } else {
-    window.addEventListener('load', hideLoader);
-    // Safety: never show loader longer than 5s
-    setTimeout(hideLoader, 5000);
+  function maybeHide() {
+    if (!pageLoaded) return;
+    var elapsed = Date.now() - startedAt;
+    var remaining = Math.max(0, MIN_DISPLAY_MS - elapsed);
+    setTimeout(hideLoader, remaining);
   }
+
+  if (pageLoaded) {
+    maybeHide();
+  } else {
+    window.addEventListener('load', function () {
+      pageLoaded = true;
+      maybeHide();
+    });
+  }
+
+  // Safety: never show loader longer than 7s under any circumstances
+  setTimeout(hideLoader, SAFETY_MAX_MS);
 })();
 </script>

@@ -1,13 +1,41 @@
-<!-- LOADER OVERLAY -->
+<!-- LOADER OVERLAY: Montissol Essentials logo reveal animation -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap">
 <div id="pageLoader" class="page-loader" aria-label="Loading" role="status">
-  <div class="loader-shell">
-    <div class="whirl whirl--outer"></div>
-    <div class="whirl whirl--mid"></div>
-    <div class="whirl whirl--inner"></div>
-    <div class="globe-wrap">
-      <canvas id="globeCanvas" width="400" height="400"></canvas>
+  <div class="me-loader">
+    <!-- Mark + wordmark row -->
+    <div class="me-row">
+      <!-- 4 chevrons -->
+      <div class="me-chev-group">
+        <svg class="me-chev me-chev--1" viewBox="0 0 100 170" aria-hidden="true">
+          <path d="M 0 0 L 55 0 L 100 85 L 55 170 L 0 170 L 45 85 Z" />
+        </svg>
+        <svg class="me-chev me-chev--2" viewBox="0 0 100 170" aria-hidden="true">
+          <path d="M 0 0 L 55 0 L 100 85 L 55 170 L 0 170 L 45 85 Z" />
+        </svg>
+        <svg class="me-chev me-chev--3" viewBox="0 0 100 170" aria-hidden="true">
+          <path d="M 0 0 L 55 0 L 100 85 L 55 170 L 0 170 L 45 85 Z" />
+        </svg>
+        <svg class="me-chev me-chev--4 me-chev--white" viewBox="0 0 100 170" aria-hidden="true">
+          <path d="M 0 0 L 55 0 L 100 85 L 55 170 L 0 170 L 45 85 Z" />
+        </svg>
+      </div>
+
+      <!-- Divider -->
+      <div class="me-divider"></div>
+
+      <!-- Wordmark -->
+      <div class="me-wordmark">
+        <div class="me-mont">MONTISSOL</div>
+        <div class="me-ess">ESSENTIALS</div>
+      </div>
     </div>
-    <div class="brand-label">Montissol Essentials L.L.C</div>
+
+    <!-- Tagline with rule lines -->
+    <div class="me-tagline">
+      <div class="me-rule me-rule--l"></div>
+      <div class="me-tag-text">Facility Management Services</div>
+      <div class="me-rule me-rule--r"></div>
+    </div>
   </div>
 </div>
 
@@ -16,123 +44,180 @@
     position: fixed; inset: 0; z-index: 999999;
     display: grid; place-items: center;
     background: #000;
-    transition: opacity .45s ease, visibility .45s ease;
+    transition: opacity .5s ease, visibility .5s ease;
+    overflow: hidden;
   }
   .page-loader.is-hidden {
     opacity: 0; visibility: hidden; pointer-events: none;
   }
-  .page-loader .loader-shell {
-    position: relative;
-    width: 260px; height: 260px;
-    display: grid; place-items: center;
-  }
-  .page-loader .whirl {
+  .page-loader::before {
+    content: '';
     position: absolute; inset: 0;
-    border-radius: 50%;
+    background: radial-gradient(ellipse at center, #1a1715 0%, #000 65%, #050505 100%);
+    opacity: 0.85;
     pointer-events: none;
   }
-  .page-loader .whirl--outer {
-    border: 1px dashed rgba(231, 77, 16, 0.35);
-    animation: pl-spin 8s linear infinite;
-  }
-  .page-loader .whirl--outer::before,
-  .page-loader .whirl--outer::after {
-    content: ''; position: absolute;
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #E74D10;
-    top: -3px; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 0 14px #E74D10;
-  }
-  .page-loader .whirl--outer::after {
-    top: auto; bottom: -3px;
-    background: #f59e0b;
-    box-shadow: 0 0 14px #f59e0b;
-  }
-  .page-loader .whirl--mid {
-    inset: 14px;
-    border: 1px solid rgba(245, 158, 11, 0.18);
-    animation: pl-spin-rev 6s linear infinite;
-  }
-  .page-loader .whirl--inner {
-    inset: 24px;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      rgba(231, 77, 16, 0.55) 45deg,
-      transparent 90deg,
-      transparent 180deg,
-      rgba(245, 158, 11, 0.35) 225deg,
-      transparent 270deg,
-      transparent 360deg
-    );
-    mask: radial-gradient(circle, transparent 52%, #000 53%, #000 57%, transparent 58%);
-    -webkit-mask: radial-gradient(circle, transparent 52%, #000 53%, #000 57%, transparent 58%);
-    animation: pl-spin 2.5s linear infinite;
-  }
-  .page-loader .globe-wrap {
-    position: relative; width: 200px; height: 200px;
-    filter: drop-shadow(0 0 30px rgba(231, 77, 16, 0.35));
-  }
-  .page-loader #globeCanvas {
-    width: 200px; height: 200px; display: block;
-  }
-  .page-loader .brand-label {
-    position: absolute;
-    bottom: -56px; left: 50%;
-    transform: translateX(-50%);
+
+  .me-loader {
+    position: relative;
+    color: #fff;
+    font-family: 'Oswald', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     text-align: center;
-    white-space: nowrap;
-    font-weight: 900;
-    font-size: 0.9rem;
-    letter-spacing: 0.32em;
+    transform: translateZ(0);
+    animation: me-breathe 6s ease-in-out infinite;
+  }
+
+  .me-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  /* ── Chevron group ── */
+  .me-chev-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 165px;
+    height: 95px;
+  }
+  .me-chev {
+    position: absolute;
+    top: 0;
+    width: 56px;
+    height: 95px;
+    fill: #E8501F;
+    opacity: 0;
+    transform: translateX(-28px);
+    animation: me-chev-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .me-chev--1 { left: 0;   animation-delay: 0.0s; }
+  .me-chev--2 { left: 32px; animation-delay: 0.1s; }
+  .me-chev--3 { left: 64px; animation-delay: 0.2s; }
+  .me-chev--4 { left: 96px; animation-delay: 0.3s; fill: #fff; }
+
+  /* ── Divider ── */
+  .me-divider {
+    width: 2px;
+    height: 105px;
+    background: #fff;
+    transform-origin: center;
+    transform: scaleY(0);
+    animation: me-grow-y 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.7s forwards;
+  }
+
+  /* ── Wordmark ── */
+  .me-wordmark {
+    text-align: left;
+    opacity: 0;
+    transform: translateX(-12px);
+    clip-path: inset(0 100% 0 0);
+    -webkit-clip-path: inset(0 100% 0 0);
+    animation: me-wipe-in 0.9s cubic-bezier(0.65, 0, 0.35, 1) 1.0s forwards;
+  }
+  .me-mont {
+    font-weight: 700;
+    font-size: 52px;
+    line-height: 0.92;
+    letter-spacing: 0.005em;
     text-transform: uppercase;
-    background: linear-gradient(135deg, #fff 0%, #ff6a33 100%);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    animation: pl-text 2.5s ease-in-out infinite;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    white-space: nowrap;
+    color: #fff;
   }
-  .page-loader .brand-label::after {
-    content: '';
-    display: block;
-    width: 40px; height: 2px;
-    margin: 10px auto 0;
-    background: linear-gradient(90deg, transparent, #E74D10, transparent);
+  .me-ess {
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: 0.038em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #fff;
+    margin-top: 4px;
   }
-  @keyframes pl-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  @keyframes pl-spin-rev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-  @keyframes pl-text { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+
+  /* ── Tagline ── */
+  .me-tagline {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 380px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .me-rule {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.85);
+    transform: scaleX(0);
+    animation: me-grow-x 0.6s cubic-bezier(0.65, 0, 0.35, 1) 1.8s forwards;
+  }
+  .me-rule--l { transform-origin: right center; }
+  .me-rule--r { transform-origin: left center; }
+  .me-tag-text {
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: me-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 2.1s forwards;
+  }
+
+  /* ── Keyframes ── */
+  @keyframes me-chev-in {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes me-grow-y {
+    to { transform: scaleY(1); }
+  }
+  @keyframes me-wipe-in {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+      clip-path: inset(0 0 0 0);
+      -webkit-clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes me-grow-x {
+    to { transform: scaleX(1); }
+  }
+  @keyframes me-fade-up {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes me-breathe {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.015); }
+  }
+
+  /* Mobile scale-down */
+  @media (max-width: 600px) {
+    .me-loader { transform: scale(0.65); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .page-loader .whirl--outer,
-    .page-loader .whirl--mid,
-    .page-loader .whirl--inner,
-    .page-loader .brand-label { animation: none !important; }
+    .me-chev, .me-divider, .me-wordmark, .me-rule, .me-tag-text, .me-loader {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
+      -webkit-clip-path: none !important;
+    }
   }
 </style>
 
 <script>
 (function () {
-  // Load D3 + topojson and draw the spinning globe
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = src;
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
-
   function hideLoader() {
-    const loader = document.getElementById('pageLoader');
+    var loader = document.getElementById('pageLoader');
     if (!loader) return;
     loader.classList.add('is-hidden');
-    setTimeout(() => loader.remove(), 500);
+    setTimeout(function () { loader.remove(); }, 600);
   }
 
-  // Always hide loader when window loads or after a safety timeout
   if (document.readyState === 'complete') {
     hideLoader();
   } else {
@@ -140,76 +225,5 @@
     // Safety: never show loader longer than 5s
     setTimeout(hideLoader, 5000);
   }
-
-  (async function () {
-    try {
-      if (typeof d3 === 'undefined') {
-        await loadScript('https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js');
-      }
-      if (typeof topojson === 'undefined') {
-        await loadScript('https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js');
-      }
-
-      const canvas = document.getElementById('globeCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const size = 200;
-      canvas.width = size * dpr;
-      canvas.height = size * dpr;
-      canvas.style.width = size + 'px';
-      canvas.style.height = size + 'px';
-      ctx.scale(dpr, dpr);
-
-      const projection = d3.geoOrthographic()
-        .scale(size / 2 - 4)
-        .translate([size / 2, size / 2])
-        .clipAngle(90)
-        .rotate([0, -20, 0]);
-      const path = d3.geoPath(projection, ctx);
-      const graticule = d3.geoGraticule10();
-      const sphere = { type: 'Sphere' };
-
-      const world = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json());
-      const land = topojson.feature(world, world.objects.land);
-      const countries = topojson.mesh(world, world.objects.countries, (a, b) => a !== b);
-
-      function draw() {
-        ctx.clearRect(0, 0, size, size);
-        ctx.beginPath(); path(sphere);
-        ctx.fillStyle = 'rgba(231,77,16,0.04)'; ctx.fill();
-        ctx.beginPath(); path(graticule);
-        ctx.strokeStyle = 'rgba(231,77,16,0.18)'; ctx.lineWidth = 0.5; ctx.stroke();
-        ctx.beginPath(); path(land);
-        const grad = ctx.createRadialGradient(size * 0.35, size * 0.35, 10, size / 2, size / 2, size / 2);
-        grad.addColorStop(0, '#ff6a33');
-        grad.addColorStop(0.5, '#E74D10');
-        grad.addColorStop(1, '#8a2d06');
-        ctx.fillStyle = grad; ctx.fill();
-        ctx.beginPath(); path(countries);
-        ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 0.5; ctx.stroke();
-        ctx.beginPath(); path(sphere);
-        ctx.strokeStyle = 'rgba(231,77,16,0.55)'; ctx.lineWidth = 1.2; ctx.stroke();
-      }
-
-      let lon = 0;
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduceMotion) {
-        draw();
-      } else {
-        (function animate() {
-          lon = (lon + 0.25) % 360;
-          projection.rotate([lon, -20, 0]);
-          draw();
-          // Stop animating once loader is hidden
-          if (!document.getElementById('pageLoader')) return;
-          requestAnimationFrame(animate);
-        })();
-      }
-    } catch (err) {
-      // Silent fail - loader still shows with whirl rings and brand text
-      console.warn('Globe loader failed to initialize:', err);
-    }
-  })();
 })();
 </script>

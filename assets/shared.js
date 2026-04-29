@@ -1,13 +1,16 @@
-// Inject the page loader as early as possible
+// Inject the page loader on the first visit of a session only.
+// sessionStorage persists across in-site navigations but clears when the
+// tab is closed, so returning visitors see the animation again.
 (async function () {
   try {
+    if (sessionStorage.getItem('me_loader_seen') === '1') return;
+    sessionStorage.setItem('me_loader_seen', '1');
+
     const res = await fetch('assets/loader.html');
     const html = await res.text();
     const mount = document.createElement('div');
     mount.innerHTML = html;
-    // Insert at the start of body so it overlays everything
     document.body.insertBefore(mount, document.body.firstChild);
-    // Execute any <script> tags inside the loader markup (innerHTML doesn't run them)
     mount.querySelectorAll('script').forEach(old => {
       const s = document.createElement('script');
       if (old.src) s.src = old.src;

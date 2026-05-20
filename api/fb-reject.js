@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   if (!raw) return send(res, 410, '<h1>Already used or expired</h1>');
   const draft = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
-  await advanceTheme(redis);
+  if (!draft.dry_run) await advanceTheme(redis);
   await redis.lpush(KEYS.history, JSON.stringify({
     ts: new Date().toISOString(),
     theme: draft.theme,

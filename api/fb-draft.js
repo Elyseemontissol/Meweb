@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { redis, KEYS } from './_lib/redis.js';
+import { SYSTEM_PROMPT } from './_lib/system-prompt.js';
 import { getNextTheme } from './_lib/themes.js';
 import { generateCaption } from './_lib/caption.js';
 import { generateImage } from './_lib/image.js';
@@ -9,14 +8,10 @@ import { signToken } from './_lib/tokens.js';
 import { renderApprovalEmail, sendApprovalEmail } from './_lib/email.js';
 
 const DRAFT_TTL_SECONDS = 72 * 60 * 60;
+export const config = { maxDuration: 60 };
 
 function appBaseUrl() {
   return process.env.PUBLIC_BASE_URL || 'https://www.montissolessentials.com';
-}
-
-async function loadSystemPrompt() {
-  const path = join(process.cwd(), 'prompts', 'system-prompt.md');
-  return readFile(path, 'utf8');
 }
 
 async function recentCaptions(limit = 4) {
@@ -50,7 +45,7 @@ export default async function handler(req, res) {
   try {
     const theme = await getNextTheme(redis);
     const weekDate = new Date().toISOString().slice(0, 10);
-    const systemPrompt = await loadSystemPrompt();
+    const systemPrompt = SYSTEM_PROMPT;
     const recent = await recentCaptions(4);
 
     let captionResult;
@@ -63,7 +58,7 @@ export default async function handler(req, res) {
         apiKey: process.env.ANTHROPIC_API_KEY,
       });
     } catch (err) {
-      await new Promise((r) => setTimeout(r, 60_000));
+      await new Promise((r) => setTimeout(r, 8_000));
       captionResult = await generateCaption({
         theme,
         weekDate,

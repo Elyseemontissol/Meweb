@@ -32,3 +32,18 @@ test('signToken produces different tokens for different actions', () => {
   const r = signToken('draft-123', 'reject', SECRET);
   assert.notEqual(a, r);
 });
+
+test('verifyToken rejects tampered payload with original signature', () => {
+  const token = signToken('draft-123', 'approve', SECRET);
+  const [payload, sig] = token.split('.');
+  const obj = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+  obj.action = 'reject';
+  const badPayload = Buffer.from(JSON.stringify(obj)).toString('base64url');
+  assert.equal(verifyToken(`${badPayload}.${sig}`, SECRET), null);
+});
+
+test('verifyToken rejects non-string tokens', () => {
+  assert.equal(verifyToken(null, SECRET), null);
+  assert.equal(verifyToken(42, SECRET), null);
+  assert.equal(verifyToken({}, SECRET), null);
+});

@@ -9,6 +9,7 @@ function fromB64url(s) {
 }
 
 export function signToken(draftId, action, secret) {
+  if (!secret) throw new TypeError('signToken: secret is required');
   const payload = b64url(JSON.stringify({ draftId, action }));
   const sig = b64url(createHmac('sha256', secret).update(payload).digest());
   return `${payload}.${sig}`;
@@ -16,6 +17,7 @@ export function signToken(draftId, action, secret) {
 
 export function verifyToken(token, secret) {
   if (typeof token !== 'string') return null;
+  if (!secret) return null;
   const parts = token.split('.');
   if (parts.length !== 2) return null;
   const [payload, sig] = parts;

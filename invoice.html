@@ -4,9 +4,9 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Pay Invoice - Montissol Essentials</title>
-  <meta name="description" content="Securely pay your Montissol Essentials invoice online via PayPal or credit card.">
+  <meta name="description" content="Securely pay your Montissol Essentials invoice online online by credit card or bank transfer.">
   <meta property="og:title" content="Pay Invoice - Montissol Essentials">
-  <meta property="og:description" content="Securely pay your Montissol Essentials invoice online via PayPal or credit card.">
+  <meta property="og:description" content="Securely pay your Montissol Essentials invoice online online by credit card or bank transfer.">
   <meta property="og:image" content="https://montissolessentials.com/assets/images/Header-logo.png">
   <meta property="og:url" content="https://montissolessentials.com/invoice.html">
   <meta property="og:type" content="website">
@@ -18,36 +18,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon.png">
-
-  <!--
-    ============================================================
-    PAYPAL SETUP INSTRUCTIONS
-    ============================================================
-
-    STEP 1 — Get your PayPal Client ID:
-      1. Go to https://developer.paypal.com/dashboard/
-      2. Log in with your PayPal BUSINESS account
-         (Recommended: PayPal Business account so payments go
-          directly to your business — sign up at paypal.com/business)
-      3. Click "Apps & Credentials" in the left sidebar
-      4. Switch the toggle from "Sandbox" to "Live" (top right)
-      5. Click "Create App" (or use an existing app)
-      6. Copy the "Client ID" shown — it starts with "A..."
-
-    STEP 2 — Replace the placeholder below:
-      Find the line:  client-id=YOUR_PAYPAL_CLIENT_ID_HERE
-      Replace  YOUR_PAYPAL_CLIENT_ID_HERE  with your actual Live Client ID
-
-    STEP 3 — (Optional) Sandbox testing:
-      For testing before going live, use your Sandbox Client ID and
-      change  &intent=capture  to test with PayPal sandbox accounts.
-      Switch back to the Live Client ID when ready for real payments.
-
-    NOTE: Customers do NOT need a PayPal account — PayPal's checkout
-    also accepts credit/debit cards directly.
-    ============================================================
-  -->
-  <script src="https://www.paypal.com/sdk/js?client-id=Adt-7jQG0-a9hOUWfxHJHDA_l06-NjckC_0ZPQ5N73iZ7CdvtDzZEOnWsVjAlZn-o1jvR8lzoepLZ3g_&currency=USD&intent=capture" defer></script>
 
   <style>
     /* ── Payment page–specific styles ── */
@@ -126,10 +96,6 @@
       color: var(--text-muted);
       text-align: center;
       margin-bottom: 16px;
-    }
-
-    #paypal-button-container {
-      min-height: 55px;
     }
 
     .pay-notice {
@@ -254,7 +220,7 @@
   <div class="container hero-split__inner">
     <div class="hero-split__kicker"><span class="dot"></span><span>Secure Payment Portal</span></div>
     <h1 class="hero-split__headline">Pay Your Invoice</h1>
-    <p class="hero-split__sub">Pay your Montissol Essentials invoice securely online. We accept PayPal and all major credit &amp; debit cards — no PayPal account required.</p>
+    <p class="hero-split__sub">Pay your Montissol Essentials invoice securely online. Pay securely by credit card or bank transfer (ACH).</p>
     <div class="hero-split__actions">
       <a class="btn ghost" href="contact-us.html">Questions? Contact Us</a>
     </div>
@@ -273,7 +239,7 @@
 
       <div style="display:flex; align-items:center; gap:8px;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span style="font-size:.8rem; font-weight:700; color:var(--text-secondary);">Secured by PayPal</span>
+        <span style="font-size:.8rem; font-weight:700; color:var(--text-secondary);">Secured by Stripe</span>
       </div>
 
       <div style="display:flex; align-items:center; gap:8px;">
@@ -283,7 +249,7 @@
 
       <div style="display:flex; align-items:center; gap:8px;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a78bfa" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-        <span style="font-size:.8rem; font-weight:700; color:var(--text-secondary);">No PayPal Account Required</span>
+        <span style="font-size:.8rem; font-weight:700; color:var(--text-secondary);">Card &amp; Bank Transfer</span>
       </div>
 
     </div>
@@ -301,7 +267,7 @@
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         </div>
         <h2 class="success-title">Payment Received!</h2>
-        <p class="success-sub">Thank you for your payment to Montissol Essentials. A confirmation has been sent to your email by PayPal.</p>
+        <p class="success-sub">Thank you for your payment to Montissol Essentials. A receipt has been emailed to you.</p>
         <p class="success-ref">Transaction ID: <span id="successTxId">—</span></p>
         <p class="success-ref" id="successInvoiceRow" style="display:none;">Invoice #: <span id="successInvoice">—</span></p>
         <a class="btn primary" href="index.html">Return Home</a>
@@ -381,14 +347,14 @@
 
         <p class="pay-methods-label">Choose your payment method</p>
 
-        <!-- PayPal Smart Payment Buttons -->
-        <div id="paypal-button-container"></div>
+        <!-- Stripe Payment Element -->
+        <div id="payment-element"></div>
+        <button type="button" id="payBtn" class="btn primary" style="width:100%; margin-top:18px; padding:14px; font-size:1rem;">Pay</button>
 
         <div class="pay-notice" style="margin-top:18px;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
           <p>
-            <strong>No PayPal account needed.</strong> After clicking the button above, PayPal's secure checkout will open — you can pay with any major credit or debit card as a guest, or log in with your PayPal account.
-            Your payment goes directly to <strong>Montissol Essentials LLC</strong>.
+            Pay by credit/debit card or directly from your bank account (ACH). Card and bank details are entered securely and never touch our servers. Your payment goes to <strong>Montissol Essentials LLC</strong>.
           </p>
         </div>
 
@@ -1085,101 +1051,6 @@
     return valid;
   }
 
-  // ── PayPal Smart Buttons ──
-  function initPayPal() {
-    if (typeof paypal === 'undefined') {
-      // SDK failed to load — show a fallback notice
-      document.getElementById('paypal-button-container').innerHTML =
-        '<div style="padding:16px; border-radius:12px; background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2); color:#f87171; font-size:.85rem;">' +
-        'PayPal could not be loaded. Please check your internet connection or contact us at ' +
-        '<a href="mailto:Info@MontissolEssentials.com" style="color:var(--brand);">Info@MontissolEssentials.com</a>.' +
-        '</div>';
-      return;
-    }
-
-    paypal.Buttons({
-      style: {
-        layout: 'vertical',   // stacks PayPal + debit/credit card buttons
-        color:  'gold',
-        shape:  'pill',
-        label:  'pay',
-        height: 50
-      },
-
-      // Called when the buyer clicks the button — validate first, then create the order
-      onClick: function (data, actions) {
-        if (!validateForm()) {
-          return actions.reject();  // Prevents PayPal popup from opening
-        }
-        return actions.resolve();
-      },
-
-      // Create the PayPal order with the entered amount
-      createOrder: function (data, actions) {
-        var amount   = parseFloat(amountInput.value).toFixed(2);
-        var invoice  = document.getElementById('payInvoice').value.trim();
-        var memo     = document.getElementById('payMemo').value.trim();
-        var desc     = 'Montissol Essentials – ' +
-                       (invoice ? 'Invoice ' + invoice : 'Payment') +
-                       (memo ? ' – ' + memo : '');
-
-        return actions.order.create({
-          purchase_units: [{
-            description: desc.substring(0, 127),   // PayPal max 127 chars
-            amount: {
-              currency_code: 'USD',
-              value: amount
-            },
-            // custom_id is stored on the PayPal transaction for your records
-            custom_id: invoice || undefined
-          }]
-        });
-      },
-
-      // Payment approved — capture funds
-      onApprove: function (data, actions) {
-        return actions.order.capture().then(function (details) {
-          var txId      = details.id || data.orderID || '—';
-          var invoice   = document.getElementById('payInvoice').value.trim();
-
-          // Show success screen
-          document.getElementById('successTxId').textContent = txId;
-          if (invoice) {
-            document.getElementById('successInvoice').textContent = invoice;
-            document.getElementById('successInvoiceRow').style.display = 'block';
-          }
-          document.getElementById('payFormWrap').style.display  = 'none';
-          document.getElementById('paySuccess').style.display   = 'block';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-      },
-
-      // Payment cancelled — do nothing (PayPal popup closes)
-      onCancel: function () { /* no-op */ },
-
-      // Payment error
-      onError: function (err) {
-        var errorBanner = document.getElementById('payFormError');
-        errorBanner.textContent =
-          'A payment error occurred. Please try again, or contact us at Info@MontissolEssentials.com.';
-        errorBanner.style.display = 'block';
-        console.error('PayPal error:', err);
-      }
-
-    }).render('#paypal-button-container');
-  }
-
-  // Wait for the PayPal SDK script to finish loading
-  var sdkScript = document.querySelector('script[src*="paypal.com/sdk"]');
-  if (sdkScript) {
-    // The SDK script has defer, so it loads after DOMContentLoaded.
-    // Use the window.onload event to be safe.
-    if (document.readyState === 'complete') {
-      initPayPal();
-    } else {
-      window.addEventListener('load', initPayPal);
-    }
-  }
 })();
 </script>
 

@@ -496,6 +496,7 @@
 
 <div id="shared-footer"></div>
 
+<script src="https://js.stripe.com/v3/"></script>
 <script src="assets/shared.js"></script>
 <script src="assets/app.js"></script>
 
@@ -1050,6 +1051,140 @@
 
     return valid;
   }
+
+  // ── Stripe Payment Element ──
+  var stripe, elements;
+  var payBtn = document.getElementById('payBtn');
+  var RETURN_URL = window.location.origin + window.location.pathname;
+
+  function payError(msg) {
+    var banner = document.getElementById('payFormError');
+    banner.textContent = msg;
+    banner.style.display = 'block';
+  }
+
+  function currentAmountCents() {
+    var val = parseFloat(amountInput.value);
+    return (!isNaN(val) && val >= 1) ? Math.round(val * 100) : 100;
+  }
+
+  function refreshPayButton() {
+    var val = parseFloat(amountInput.value);
+    payBtn.textContent = (!isNaN(val) && val >= 1)
+      ? 'Pay $' + val.toFixed(2)
+      : 'Pay';
+  }
+  amountInput.addEventListener('input', refreshPayButton);
+  refreshPayButton();
+
+  function showSuccess(pi) {
+    document.getElementById('successTxId').textContent = pi.id;
+    var invoice = document.getElementById('payInvoice').value.trim();
+    if (invoice) {
+      document.getElementById('successInvoice').textContent = invoice;
+      document.getElementById('successInvoiceRow').style.display = 'block';
+    }
+    var titleEl = document.querySelector('#paySuccess .success-title');
+    var subEl = document.querySelector('#paySuccess .success-sub');
+    if (pi.status === 'processing') {
+      titleEl.textContent = 'Bank Payment Submitted';
+      subEl.textContent = 'Your bank payment is processing and will complete within 3–5 business days. A receipt has been emailed to you.';
+    } else {
+      titleEl.textContent = 'Payment Received!';
+      subEl.textContent = 'Thank you for your payment to Montissol Essentials. A receipt has been emailed to you.';
+    }
+    document.getElementById('payFormWrap').style.display = 'none';
+    document.getElementById('paySuccess').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function initStripe() {
+    var cfg;
+    try {
+      cfg = await fetch('/api/stripe-config').then(function (r) { return r.json(); });
+    } catch (e) { cfg = {}; }
+    if (!cfg.publishableKey || typeof Stripe === 'undefined') {
+      document.getElementById('payment-element').innerHTML =
+        '<div style="padding:16px; border-radius:12px; background:rgba(239,68,68,.08); ' +
+        'border:1px solid rgba(239,68,68,.2); color:#f87171; font-size:.85rem;">' +
+        'The payment system could not be loaded. Please refresh, or contact us at ' +
+        '<a href="mailto:Info@MontissolEssentials.com" style="color:var(--brand);">Info@MontissolEssentials.com</a>.</div>';
+      payBtn.disabled = true;
+      return;
+    }
+    stripe = Stripe(cfg.publishableKey);
+    elements = stripe.elements({
+      mode: 'payment',
+      amount: currentAmountCents(),
+      currency: 'usd',
+      paymentMethodTypes: ['card', 'us_bank_account'],
+    });
+    elements.create('payment').mount('#payment-element');
+  }
+
+  amountInput.addEventListener('input', function () {
+    if (elements) elements.update({ amount: currentAmountCents() });
+  });
+
+  payBtn.addEventListener('click', async function () {
+    if (!stripe || !elements) return;
+    if (!validateForm()) return;
+    payBtn.disabled = true;
+    document.getElementById('payFormError').style.display = 'none';
+
+    var submitResult = await elements.submit();
+    if (submitResult.error) {
+      payError(submitResult.error.message);
+      payBtn.disabled = false;
+      return;
+    }
+
+    var clientSecret;
+    try {
+      var res = await fetch('/api/stripe-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseFloat(amountInput.value),
+          name: document.getElementById('payName').value.trim(),
+          email: document.getElementById('payEmail').value.trim(),
+          invoice: document.getElementById('payInvoice').value.trim(),
+          memo: document.getElementById('payMemo').value.trim(),
+        }),
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not start the payment.');
+      clientSecret = data.clientSecret;
+    } catch (err) {
+      payError(err.message);
+      payBtn.disabled = false;
+      return;
+    }
+
+    var confirmResult = await stripe.confirmPayment({
+      elements: elements,
+      clientSecret: clientSecret,
+      confirmParams: { return_url: RETURN_URL },
+      redirect: 'if_required',
+    });
+
+    if (confirmResult.error) {
+      payError(confirmResult.error.message);
+      payBtn.disabled = false;
+      return;
+    }
+    showSuccess(confirmResult.paymentIntent);
+  });
+
+  // Handle the return from a redirect-based payment method (e.g. ACH).
+  async function handleRedirectReturn() {
+    var cs = new URLSearchParams(window.location.search).get('payment_intent_client_secret');
+    if (!cs || !stripe) return;
+    var result = await stripe.retrievePaymentIntent(cs);
+    if (result.paymentIntent) showSuccess(result.paymentIntent);
+  }
+
+  initStripe().then(handleRedirectReturn);
 
 })();
 </script>

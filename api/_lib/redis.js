@@ -2,18 +2,14 @@ import { Redis } from '@upstash/redis';
 
 const _client = Redis.fromEnv();
 
-// Export a plain mutable object so tests can patch individual methods.
+// Narrow interface exposing only the Redis operations this app uses.
 export const redis = {
-  get:      (...args) => _client.get(...args),
-  set:      (...args) => _client.set(...args),
-  del:      (...args) => _client.del(...args),
-  getdel:   (...args) => _client.getdel(...args),
-  lrange:   (...args) => _client.lrange(...args),
-  lpush:    (...args) => _client.lpush(...args),
-  ltrim:    (...args) => _client.ltrim(...args),
-  smembers: (...args) => _client.smembers(...args),
-  sadd:     (...args) => _client.sadd(...args),
-  srem:     (...args) => _client.srem(...args),
+  get:    (...args) => _client.get(...args),
+  set:    (...args) => _client.set(...args),
+  getdel: (...args) => _client.getdel(...args),
+  lrange: (...args) => _client.lrange(...args),
+  lpush:  (...args) => _client.lpush(...args),
+  ltrim:  (...args) => _client.ltrim(...args),
 };
 
 export const KEYS = {

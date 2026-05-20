@@ -1118,6 +1118,13 @@
       amount: currentAmountCents(),
       currency: 'usd',
       paymentMethodTypes: ['card', 'us_bank_account'],
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorPrimary: '#e74d10',
+          fontFamily: '-apple-system, "Segoe UI", sans-serif',
+        },
+      },
     });
     elements.create('payment').mount('#payment-element');
   }
